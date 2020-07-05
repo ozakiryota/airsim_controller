@@ -18,6 +18,10 @@ int main()
 	std::cin.get();
 	client.takeoffAsync(5)->waitOnLastTask();
 
+	std::cout << "Press Enter to rotation" << std::endl;
+	std::cin.get();
+	client.moveByRollPitchYawZAsync(M_PI/4.0, 0.0, 0.0, 0.0, 5.0)->waitOnLastTask();
+
 	std::cout << "Press Enter to move 5 meters in x direction with 1 m/s velocity" << std::endl;
 	std::cin.get();  
 	auto position = client.getMultirotorState().getPosition(); // from current location
