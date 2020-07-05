@@ -7,7 +7,7 @@ int main()
 	msr::airlib::MultirotorRpcLibClient client;
 
 	std::cout << "Press Enter to enable API control" << std::endl;
-	std::cin.get(;
+	std::cin.get();
 	client.enableApiControl(true);
 
 	std::cout << "Press Enter to arm the drone" << std::endl;
