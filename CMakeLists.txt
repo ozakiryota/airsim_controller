@@ -6,7 +6,7 @@ add_compile_options(-std=c++11)
 # set(AIRSIM_ROOT ../AirSim)
 find_path(AIRSIM_ROOT
 	NAMES AirSim.sln 
-	PATHS "../AirSim"
+	PATHS "./AirSim" "../AirSim" "../../AirSim" "../../../AirSim" "../../../../AirSim"
 )
 message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
 
