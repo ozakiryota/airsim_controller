@@ -70,31 +70,36 @@ void DroneRandomFlight::randomRotation(void)
 
 void DroneRandomFlight::randomGlobalMove(void)
 {
+	/*get state*/
 	msr::airlib::MultirotorState state = _client.getMultirotorState();
-
+	/*set goal*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
 	std::uniform_real_distribution<> urd_xy(-50.0, 50.0);
 	std::uniform_real_distribution<> urd_z(-3.0, -2.0);
-
 	float x = urd_xy(mt);
 	float y = urd_xy(mt);
 	float z = urd_z(mt);
-	float dist = computeL2Norm(
-		x - state.kinematics_estimated.pose.position.x(),
-		y - state.kinematics_estimated.pose.position.y(),
-		z - state.kinematics_estimated.pose.position.z()
-	);
-	float vel = dist;
-
+	/*print goal*/
 	std::cout << "Move to ("
 		<< x << ", "
 		<< y << ", "
 		<< z << ") with "
 		<< vel << "[m/s] "
 		<< std::endl;
-
+	/*up to sky*/
+	const float sky_height = -20.0;
+	 _client.moveToZAsynci(sky_height, std::abs(sky_height)/1.0);
+	/*move on xy plane*/
+	float dist = computeL2Norm(
+		x - state.kinematics_estimated.pose.position.x(),
+		y - state.kinematics_estimated.pose.position.y(),
+		0.0
+	);
+	float vel = dist/1.0;
 	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
+	/*up to sky*/
+	 _client.moveToZAsynci(z, std::abs(sky_height)/1.0);
 }
 
 void DroneRandomFlight::printState(void)
