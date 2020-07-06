@@ -65,14 +65,14 @@ void DroneRandomPose::randomPose(void)
 	msr::airlib::Pose pose = Pose(position, orientation);
 	std::cout << "Move to: "
 		<< pose.position << ", "
-		<< pose.orientation << std::endl
+		<< pose.orientation << std::endl;
 		/* << pose.position.x() << ", " */
 		/* << pose.position.y() << ", " */
 		/* << pose.position.z() << std::endl; */
 	std::cout << "RPY: "
 		<< roll << ", "
 		<< pitch << ", "
-		<< yaw << std::endl
+		<< yaw << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, false);
 }
@@ -91,7 +91,7 @@ void DroneRandomPose::printPose(void)
 		<< pose.orientation.z() << std::endl;
 }
 
-void DroneRandom::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
+void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
 {
 	q = AngleAxisf(r, Vector3f::UnitX())
 		* AngleAxisf(p, Vector3f::UnitY())
