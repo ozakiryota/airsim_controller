@@ -3,7 +3,8 @@
 
 class DroneRandomPose{
 	private:
-		msr::airlib::MultirotorRpcLibClient _client;
+		//msr::airlib::MultirotorRpcLibClient _client;
+		RpcLibClientBase _client;
 
 	public:
 		DroneRandomPose();
@@ -22,16 +23,18 @@ DroneRandomPose::DroneRandomPose()
 
 void DroneRandomPose::initialization(void)
 {
-	std::cout << "Reset" << std::endl;
-	_client.reset();
-	std::cout << "Enable API control" << std::endl;
-	_client.enableApiControl(true);
+	/* std::cout << "Reset" << std::endl; */
+	/* _client.reset(); */
+	/* std::cout << "Enable API control" << std::endl; */
+	/* _client.enableApiControl(true); */
 	/* std::cout << "Arm the drone" << std::endl; */
 	/* _client.armDisarm(true); */
 	/* printState(); */
 	/* std::cout << "Take off" << std::endl; */
 	/* _client.takeoffAsync()->waitOnLastTask(); */
 	/* printState(); */
+	_client.confirmConnection();
+	_client.simSetCameraOrientation("camera0", Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 }
 
 void DroneRandomPose::startSampling(void)
@@ -64,13 +67,12 @@ void DroneRandomPose::randomPose(void)
 	float z = urd_z(mt);
 	Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
 	/*teleport*/
-	RpcLibClientBase client;
-	client.simSetVehiclePose(pose, true);
+	client.simSetVehiclePose(pose, false);
 }
 
 void DroneRandomPose::printState(void)
 {
-	msr::airlib::MultirotorState state = _client.getMultirotorState();
+	int state = _client.simGetVehiclePose();
 	std::cout << "Position: "	//Eigen::Matrix<float, 3, 1>
 		<< state.kinematics_estimated.pose.position.x() << ", "
 		<< state.kinematics_estimated.pose.position.y() << ", "
