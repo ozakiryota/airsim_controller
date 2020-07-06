@@ -64,6 +64,7 @@ void DroneRandomPose::randomPose(void)
 	float z = urd_z(mt);
 	Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
 	/*teleport*/
+	RpcLibClientBase client;
 	client.simSetVehiclePose(pose, true);
 }
 
