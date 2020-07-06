@@ -113,11 +113,12 @@ void DroneRandomFlight::hover(void)
 	float x = state.kinematics_estimated.pose.position.x();
 	float y = state.kinematics_estimated.pose.position.y();
 	float z = state.kinematics_estimated.pose.position.z();
-	float duration = 1.0;
-	float vel = 0.1;
+	float duration = 0.5;
+	float vel = 2.0;
 
-	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
+	//_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
+	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 }
 
 void DroneRandomFlight::printState(void)
