@@ -3,6 +3,7 @@
 
 void printPosition(msr::airlib::MultirotorRpcLibClient& client)
 {
+	int state = client.getMultirotorState();
 	Eigen::Matrix<float, 3, 1> position = client.getMultirotorState().getPosition();
 	std::cout << "Position: "
 		<< position.x() << ", "
