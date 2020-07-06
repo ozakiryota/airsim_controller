@@ -39,7 +39,6 @@ void DroneRandomPose::startSampling(void)
 	const int num_sample = 10;
 	for(int i=0; i<num_sample; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
-		printPose();
 		randomPose();
 		_client.simPause(true);
 		printPose();
@@ -60,6 +59,10 @@ void DroneRandomPose::randomPose(void)
 	float y = urd_xy(mt);
 	float z = urd_z(mt);
 	msr::airlib::Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
+	std::cout << "Move to: "
+		<< pose.position.x() << ", "
+		<< pose.position.y() << ", "
+		<< pose.position.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, false);
 }
