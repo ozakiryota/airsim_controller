@@ -15,7 +15,7 @@ int main()
 	std::cout << "Take off" << std::endl;
 	client.takeoffAsync(5.0)->waitOnLastTask();
 
-	msr::airlib::MultirotorState position = client.getMultirotorState().getPosition();
+	Eigen::Vector3r position = client.getMultirotorState().getPosition();
 
 	std::cout << "Rotation" << std::endl;
 	client.moveByRollPitchYawZAsync(M_PI/4.0, 0.0, 0.0, position.z, 5.0)->waitOnLastTask();
