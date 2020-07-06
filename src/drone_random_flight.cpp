@@ -106,7 +106,6 @@ void DroneRandomFlight::randomRotation(void)
 	float vel = 0.1;
 
 	_client.moveByRollPitchYawZAsync(r, p, y, z, duration)->waitOnLastTask();
-	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 }
 
 void DroneRandomFlight::hover(void)
@@ -118,6 +117,7 @@ void DroneRandomFlight::hover(void)
 	float duration = 1.0;
 
 	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
+	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 }
 
 void DroneRandomFlight::printState(void)
