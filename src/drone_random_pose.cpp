@@ -93,9 +93,9 @@ void DroneRandomPose::printPose(void)
 
 void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
 {
-	q = AngleAxisf(r, Vector3f::UnitX())
-		* AngleAxisf(p, Vector3f::UnitY())
-		* AngleAxisf(y, Vector3f::UnitZ());
+	q = AngleAxisf(r, Eigen::Vector3f::UnitX())
+		* AngleAxisf(p, Eigen::Vector3f::UnitY())
+		* AngleAxisf(y, Eigen::Vector3f::UnitZ());
 }
 
 int main(void) 
