@@ -25,11 +25,6 @@ void DroneRandomPose::initialization(void)
 	_client.confirmConnection();
 	std::cout << "Reset" << std::endl;
 	_client.reset();
-	std::cout << "Enable API control" << std::endl;
-	_client.enableApiControl(true);
-	std::cout << "Arm the drone" << std::endl;
-	_client.armDisarm(true);
-	_client.simSetCameraOrientation("camera0", Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 }
 
 void DroneRandomPose::startSampling(void)
@@ -40,29 +35,44 @@ void DroneRandomPose::startSampling(void)
 	for(int i=0; i<num_sample; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
-		_client.simPause(true);
 		printPose();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		_client.simPause(false);
 	}
 }
 
 void DroneRandomPose::randomPose(void)
 {
+	/*parameter*/
+	const float xy_range = 100.0;
+	const float z_min = -3.0;
+	const float z_max = -2.0;
+	const float rp_range = M_PI/4.0;
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd_xy(-50.0, 50.0);
-	std::uniform_real_distribution<> urd_z(-3.0, -2.0);
+	std::uniform_real_distribution<> urd_xy(-xy_range, xy_range);
+	std::uniform_real_distribution<> urd_z(z_min, z_max);
+	std::uniform_real_distribution<> urd_rp(-rp_range, rp_range);
+	std::uniform_real_distribution<> urd_y(-M_PI, M_PI);
 	/*set pose*/
-	float x = urd_xy(mt);
-	float y = urd_xy(mt);
-	float z = urd_z(mt);
-	msr::airlib::Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
+	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt))
+	Eigen::Quaternionf orientation;
+	float roll = urd_rp(mt);
+	float pitch = urd_rp(mt);
+	float yaw = urd_y(mt);
+	eularToQuat(roll, pitch, yaw, orientation);
+	// eularToQuat(urd_rp(mt), urd_rp(mt), urd_z(mt), orientation);
+	msr::airlib::Pose pose = Pose(position, orientation);
 	std::cout << "Move to: "
-		<< pose.position.x() << ", "
-		<< pose.position.y() << ", "
-		<< pose.position.z() << std::endl;
+		<< pose.position << ", "
+		<< pose.orientation << std::endl
+		/* << pose.position.x() << ", " */
+		/* << pose.position.y() << ", " */
+		/* << pose.position.z() << std::endl; */
+	std::cout << "RPY: "
+		<< roll << ", "
+		<< pitch << ", "
+		<< yaw << std::endl
 	/*teleport*/
 	_client.simSetVehiclePose(pose, false);
 }
@@ -79,6 +89,13 @@ void DroneRandomPose::printPose(void)
 		<< pose.orientation.x() << ", "
 		<< pose.orientation.y() << ", "
 		<< pose.orientation.z() << std::endl;
+}
+
+void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
+{
+	q = AngleAxisf(r, Vector3f::UnitX())
+		* AngleAxisf(p, Vector3f::UnitY())
+		* AngleAxisf(y, Vector3f::UnitZ());
 }
 
 int main(void) 
