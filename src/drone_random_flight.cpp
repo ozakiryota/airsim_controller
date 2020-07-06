@@ -1,7 +1,7 @@
 #include <iostream>
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-void printPosition(const msr::airlib::MultirotorRpcLibClient& client)
+void printPosition(msr::airlib::MultirotorRpcLibClient& client)
 {
 	Eigen::Matrix<float, 3, 1> position = client.getMultirotorState().getPosition();
 	std::cout << "Position: "
