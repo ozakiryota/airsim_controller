@@ -1,6 +1,15 @@
 #include <iostream>
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
+void printPosition(const msr::airlib::MultirotorRpcLibClient& client)
+{
+	Eigen::Matrix<float, 3, 1> position = client.getMultirotorState().getPosition();
+	std::cout << "Position: "
+		<< position.x() << ", "
+		<< position.y() << ", "
+		<< position.z() << std::endl;
+}
+
 int main() 
 {
 	msr::airlib::MultirotorRpcLibClient client;
@@ -21,6 +30,7 @@ int main()
 	client.moveByRollPitchYawZAsync(M_PI/6.0, 0.0, 0.0, position.z(), 1.0)->waitOnLastTask();
 
 	client.simPause(true);
+	printPosition(client);
 	std::cout << "Press enter to start sampling" << std::endl;
 	std::cin.get();
 	client.simPause(false);
@@ -35,7 +45,7 @@ int main()
 		double y = position.y() + 1.0;
 		double z = position.z() - 1.0;
 		double vel = 1.0;
-		client.moveToPositionAsync(x, y, y, vel)->waitOnLastTask();
+		client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 		std::cout << "Move to ("
 			<< x << ", "
 			<< y << ", "
