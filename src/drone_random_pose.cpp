@@ -11,7 +11,7 @@ class DroneRandomPose{
 		void startSampling(void);
 		void randomPose(void);
 		void printPose(void);
-		float computeL2Norm(float x, float y, float z);
+		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
 
 DroneRandomPose::DroneRandomPose()
@@ -55,7 +55,7 @@ void DroneRandomPose::randomPose(void)
 	std::uniform_real_distribution<> urd_rp(-rp_range, rp_range);
 	std::uniform_real_distribution<> urd_y(-M_PI, M_PI);
 	/*set pose*/
-	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt))
+	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt));
 	Eigen::Quaternionf orientation;
 	float roll = urd_rp(mt);
 	float pitch = urd_rp(mt);
@@ -91,7 +91,7 @@ void DroneRandomPose::printPose(void)
 		<< pose.orientation.z() << std::endl;
 }
 
-void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
+void DroneRandom::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
 {
 	q = AngleAxisf(r, Vector3f::UnitX())
 		* AngleAxisf(p, Vector3f::UnitY())
