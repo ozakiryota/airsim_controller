@@ -103,7 +103,6 @@ void DroneRandomFlight::randomRotation(void)
 	float y = urd_rpy(mt);
 	float z = state.kinematics_estimated.pose.position.z();
 	float duration = 1.0;
-	float vel = 0.1;
 
 	_client.moveByRollPitchYawZAsync(r, p, y, z, duration)->waitOnLastTask();
 }
@@ -115,6 +114,7 @@ void DroneRandomFlight::hover(void)
 	float y = state.kinematics_estimated.pose.position.y();
 	float z = state.kinematics_estimated.pose.position.z();
 	float duration = 1.0;
+	float vel = 0.1;
 
 	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
