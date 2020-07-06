@@ -8,7 +8,9 @@ class DroneRandomFlight{
 	public:
 		DroneRandomFlight();
 		void initialization(void);
+		void startSampling(void);
 		void randomRotation(void);
+		void randomGlobalMove(void);
 		void printState(void);
 		float computeL2Norm(float x, float y, float z);
 };
@@ -102,7 +104,7 @@ void DroneRandomFlight::printState(void)
 		<< state.kinematics_estimated.pose.orientation.x() << ", "
 		<< state.kinematics_estimated.pose.orientation.y() << ", "
 		<< state.kinematics_estimated.pose.orientation.z() << std::endl;
-	std::cout << "state.collision_info.has_collided = " << (bool)state.collision_info.has_collided << std::endl;
+	std::cout << "state.collision.has_collided = " << (bool)state.collision.has_collided << std::endl;
 }
 
 float DroneRandomFlight::computeL2Norm(float x, float y, float z)
