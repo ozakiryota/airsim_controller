@@ -40,8 +40,6 @@ void DroneRandomPose::startSampling(void)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		_client.simPause(false);
 	}
-	std::cout << "Land" << std::endl;
-	_client.landAsync()->waitOnLastTask();
 }
 
 void DroneRandomPose::randomPose(void)
