@@ -37,7 +37,7 @@ void DroneRandomPose::startSampling(void)
 		randomPose();
 		_client.simPause(true);
 		printPose();
-		std::this_thread::sleep_for(std::chrono::seconds(1.0));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 		_client.simPause(false);
 	}
 	std::cout << "Land" << std::endl;
