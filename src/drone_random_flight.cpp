@@ -24,11 +24,11 @@ void DroneRandomFlight::initialization(void)
 	std::cout << "Reset" << std::endl;
 	_client.reset();
 	std::cout << "Enable API control" << std::endl;
-	client.enableApiControl(true);
+	_client.enableApiControl(true);
 	std::cout << "Arm the drone" << std::endl;
-	client.armDisarm(true);
+	_client.armDisarm(true);
 	std::cout << "Take off" << std::endl;
-	client.takeoffAsync()->waitOnLastTask();
+	_client.takeoffAsync()->waitOnLastTask();
 }
 
 void startSampling(void)
@@ -41,7 +41,7 @@ void startSampling(void)
 		_client.simPause(false);
 	}
 	std::cout << "Land" << std::endl;
-	client.landAsync()->waitOnLastTask();
+	_client.landAsync()->waitOnLastTask();
 }
 
 void DroneRandomFlight::randomRotation(void)
@@ -87,7 +87,7 @@ void DroneRandomFlight::randomGlobalMove(void)
 		<< vel << "[m/s] "
 		<< std::endl;
 
-	client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
+	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 }
 
 void DroneRandomFlight::printState(void)
