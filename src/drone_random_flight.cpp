@@ -3,12 +3,16 @@
 
 void printPosition(msr::airlib::MultirotorRpcLibClient& client)
 {
-	int state = client.getMultirotorState();
-	Eigen::Matrix<float, 3, 1> position = client.getMultirotorState().getPosition();
-	std::cout << "Position: "
-		<< position.x() << ", "
-		<< position.y() << ", "
-		<< position.z() << std::endl;
+	msr::airlib::MultirotorState state = client.getMultirotorState();
+	std::cout << "Position: "	//Eigen::Matrix<float, 3, 1>
+		<< state.kinematics_estimated.pose.position.x() << ", "
+		<< state.kinematics_estimated.pose.position.y() << ", "
+		<< state.kinematics_estimated.pose.position.z() << std::endl;
+	std::cout << "Orientation: "	//Eigen::Quaternionf
+		<< state.kinematics_estimated.pose.orientation.w() << ", "
+		<< state.kinematics_estimated.pose.orientation.x() << ", "
+		<< state.kinematics_estimated.pose.orientation.y() << ", "
+		<< state.kinematics_estimated.pose.orientation.z() << std::endl;
 }
 
 int main() 
