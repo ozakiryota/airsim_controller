@@ -3,7 +3,6 @@
 
 int main() 
 {
-	// using namespace std;
 	msr::airlib::MultirotorRpcLibClient client;
 
 	std::cout << "Enable API control" << std::endl;
@@ -21,7 +20,7 @@ int main()
 	client.moveByRollPitchYawZAsync(M_PI/4.0, 0.0, 0.0, position.z(), 5.0)->waitOnLastTask();
 
 	const int num_samle = 100;
-	for(int i=0; i<num_samle; ++i)
+	for(int i=0; i<num_samle; ++i){
 		position = client.getMultirotorState().getPosition();
 		double x = position.x() + 1.0;
 		double y = position.y() + 1.0;
