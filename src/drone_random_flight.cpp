@@ -82,7 +82,6 @@ void DroneRandomFlight::randomGlobalMove(void)
 	/*up to sky*/
 	const float sky_height = -20.0;
 	 _client.moveToZAsync(sky_height, std::abs(sky_height)/2.0)->waitOnLastTask();
-	 hover();
 	/*move on xy plane*/
 	_client.moveToPositionAsync(x, y, sky_height, vel)->waitOnLastTask();
 	/*down to ground*/
