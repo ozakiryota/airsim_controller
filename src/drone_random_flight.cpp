@@ -29,8 +29,10 @@ void DroneRandomFlight::initialization(void)
 	_client.enableApiControl(true);
 	std::cout << "Arm the drone" << std::endl;
 	_client.armDisarm(true);
+	printState();
 	std::cout << "Take off" << std::endl;
 	_client.takeoffAsync()->waitOnLastTask();
+	printState();
 }
 
 void DroneRandomFlight::startSampling(void)
@@ -73,7 +75,7 @@ void DroneRandomFlight::randomGlobalMove(void)
 	std::random_device rd;
 	std::mt19937 mt(rd());
 	std::uniform_real_distribution<> urd_xy(-50.0, 50.0);
-	std::uniform_real_distribution<> urd_z(-2.0, -1.0);
+	std::uniform_real_distribution<> urd_z(-3.0, -2.0);
 
 	float x = urd_xy(mt);
 	float y = urd_xy(mt);
