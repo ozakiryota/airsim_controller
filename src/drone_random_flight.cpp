@@ -45,6 +45,7 @@ void DroneRandomFlight::startSampling(void)
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		printState();
 		randomGlobalMove();
+		printState();
 		_client.simPause(true);
 		_client.simPause(false);
 	}
@@ -116,7 +117,7 @@ void DroneRandomFlight::hover(void)
 	float duration = 0.5;
 	float vel = 2.0;
 
-	//_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
+	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 }
