@@ -31,10 +31,10 @@ void DroneRandomFlight::initialization(void)
 	_client.takeoffAsync()->waitOnLastTask();
 }
 
-void startSampling(void)
+void DroneRandomFlight::startSampling(void)
 {
 	const int num_sample = 10;
-	for(int i=0; i<num_samle; ++i){
+	for(int i=0; i<num_sample; ++i){
 		printState();
 		randomGlobalMove();
 		_client.simPause(true);
