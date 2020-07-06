@@ -36,7 +36,6 @@ void DroneRandomPose::startSampling(void)
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
 		printPose();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
 
@@ -64,8 +63,8 @@ void DroneRandomPose::randomPose(void)
 	// eularToQuat(urd_rp(mt), urd_rp(mt), urd_z(mt), orientation);
 	msr::airlib::Pose pose = Pose(position, orientation);
 	std::cout << "Move to: "
-		<< pose.position << ", "
-		<< pose.orientation << std::endl;
+		<< "(position) " << pose.position << ", "
+		<< "(orientation) " << pose.orientation << std::endl;
 		/* << pose.position.x() << ", " */
 		/* << pose.position.y() << ", " */
 		/* << pose.position.z() << std::endl; */
@@ -73,8 +72,13 @@ void DroneRandomPose::randomPose(void)
 		<< roll << ", "
 		<< pitch << ", "
 		<< yaw << std::endl;
+	Eigen::Vector3f acEuler = Eigen::Matrix3f(orientation).eulerAngles(0,1,2);
+	std::cout << "acEuler = " << acEuler << std::endl;
+	Eigen::Vector3f acEuler = Eigen::Matrix3f(orientation).eulerAngles(2,1,0);
+	std::cout << "acEuler = " << acEuler << std::endl;
 	/*teleport*/
-	_client.simSetVehiclePose(pose, false);
+	_client.simSetVehiclePose(pose, true);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void DroneRandomPose::printPose(void)
