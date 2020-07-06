@@ -19,6 +19,7 @@ int main()
 	std::cout << "Rotation" << std::endl;
 	client.moveByRollPitchYawZAsync(M_PI/4.0, 0.0, 0.0, position.z(), 5.0)->waitOnLastTask();
 
+	std::cin.get();
 	const int num_samle = 100;
 	for(int i=0; i<num_samle; ++i){
 		position = client.getMultirotorState().getPosition();
