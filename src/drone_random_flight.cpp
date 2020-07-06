@@ -9,8 +9,9 @@ class DroneRandomFlight{
 		DroneRandomFlight();
 		void initialization(void);
 		void startSampling(void);
-		void randomRotation(void);
 		void randomGlobalMove(void);
+		void randomRotation(void);
+		void hover(void);
 		void printState(void);
 		float computeL2Norm(float x, float y, float z);
 };
@@ -51,23 +52,6 @@ void DroneRandomFlight::startSampling(void)
 	_client.landAsync()->waitOnLastTask();
 }
 
-void DroneRandomFlight::randomRotation(void)
-{
-	msr::airlib::MultirotorState state = _client.getMultirotorState();
-
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd_rpy(-M_PI, M_PI);
-
-	float r = urd_rpy(mt);
-	float p = urd_rpy(mt);
-	float y = urd_rpy(mt);
-	float z = state.kinematics_estimated.pose.position.z();
-	float duration = 1.0;
-
-	_client.moveByRollPitchYawZAsync(r, p, y, z, duration)->waitOnLastTask();
-}
-
 void DroneRandomFlight::randomGlobalMove(void)
 {
 	/*get state*/
@@ -97,10 +81,43 @@ void DroneRandomFlight::randomGlobalMove(void)
 	/*up to sky*/
 	const float sky_height = -20.0;
 	 _client.moveToZAsync(sky_height, std::abs(sky_height)/2.0)->waitOnLastTask();
+	 hover();
 	/*move on xy plane*/
 	_client.moveToPositionAsync(x, y, sky_height, vel)->waitOnLastTask();
-	/*up to sky*/
+	 hover();
+	/*down to ground*/
 	_client.moveToPositionAsync(x, y, z, std::abs(sky_height)/2.0)->waitOnLastTask();
+	 hover();
+}
+
+void DroneRandomFlight::randomRotation(void)
+{
+	msr::airlib::MultirotorState state = _client.getMultirotorState();
+
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<> urd_rpy(-M_PI, M_PI);
+
+	float r = urd_rpy(mt);
+	float p = urd_rpy(mt);
+	float y = urd_rpy(mt);
+	float z = state.kinematics_estimated.pose.position.z();
+	float duration = 1.0;
+	float vel = 0.1;
+
+	_client.moveByRollPitchYawZAsync(r, p, y, z, duration)->waitOnLastTask();
+	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
+}
+
+void DroneRandomFlight::hover(void)
+{
+	msr::airlib::MultirotorState state = _client.getMultirotorState();
+	float x = state.kinematics_estimated.pose.position.x();
+	float y = state.kinematics_estimated.pose.position.y();
+	float z = state.kinematics_estimated.pose.position.z();
+	float duration = 1.0;
+
+	_client.moveByRollPitchYawZAsync(0.0, 0.0, 0.0, z, duration)->waitOnLastTask();
 }
 
 void DroneRandomFlight::printState(void)
