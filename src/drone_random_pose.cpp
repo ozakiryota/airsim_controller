@@ -74,7 +74,7 @@ void DroneRandomPose::randomPose(void)
 		<< yaw << std::endl;
 	Eigen::Vector3f acEuler = Eigen::Matrix3f(orientation).eulerAngles(0,1,2);
 	std::cout << "acEuler = " << acEuler << std::endl;
-	Eigen::Vector3f acEuler = Eigen::Matrix3f(orientation).eulerAngles(2,1,0);
+	acEuler = Eigen::Matrix3f(orientation).eulerAngles(2,1,0);
 	std::cout << "acEuler = " << acEuler << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, true);
