@@ -45,7 +45,6 @@ void DroneRandomFlight::startSampling(void)
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		printState();
 		randomGlobalMove();
-		printState();
 		_client.simPause(true);
 		_client.simPause(false);
 	}
@@ -86,7 +85,8 @@ void DroneRandomFlight::randomGlobalMove(void)
 	_client.moveToPositionAsync(x, y, sky_height, vel)->waitOnLastTask();
 	/*down to ground*/
 	_client.moveToPositionAsync(x, y, z, std::abs(sky_height)/2.0)->waitOnLastTask();
-	 hover();
+	printState();
+	hover();
 }
 
 void DroneRandomFlight::randomRotation(void)
