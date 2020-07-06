@@ -23,6 +23,12 @@ DroneRandomPose::DroneRandomPose()
 void DroneRandomPose::initialization(void)
 {
 	_client.confirmConnection();
+	std::cout << "Reset" << std::endl;
+	_client.reset();
+	std::cout << "Enable API control" << std::endl;
+	_client.enableApiControl(true);
+	std::cout << "Arm the drone" << std::endl;
+	_client.armDisarm(true);
 	_client.simSetCameraOrientation("camera0", Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 }
 
