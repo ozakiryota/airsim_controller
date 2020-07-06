@@ -3,7 +3,6 @@
 
 class DroneRandomPose{
 	private:
-		//msr::airlib::MultirotorRpcLibClient _client;
 		RpcLibClientBase _client;
 
 	public:
@@ -11,7 +10,7 @@ class DroneRandomPose{
 		void initialization(void);
 		void startSampling(void);
 		void randomPose(void);
-		void printState(void);
+		void printPose(void);
 		float computeL2Norm(float x, float y, float z);
 };
 
@@ -23,16 +22,6 @@ DroneRandomPose::DroneRandomPose()
 
 void DroneRandomPose::initialization(void)
 {
-	/* std::cout << "Reset" << std::endl; */
-	/* _client.reset(); */
-	/* std::cout << "Enable API control" << std::endl; */
-	/* _client.enableApiControl(true); */
-	/* std::cout << "Arm the drone" << std::endl; */
-	/* _client.armDisarm(true); */
-	/* printState(); */
-	/* std::cout << "Take off" << std::endl; */
-	/* _client.takeoffAsync()->waitOnLastTask(); */
-	/* printState(); */
 	_client.confirmConnection();
 	_client.simSetCameraOrientation("camera0", Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 }
@@ -44,10 +33,11 @@ void DroneRandomPose::startSampling(void)
 	const int num_sample = 10;
 	for(int i=0; i<num_sample; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
-		printState();
+		printPose();
 		randomPose();
 		_client.simPause(true);
-		printState();
+		printPose();
+		std::this_thread::sleep_for(std::chrono::seconds(1.0));
 		_client.simPause(false);
 	}
 	std::cout << "Land" << std::endl;
@@ -65,24 +55,23 @@ void DroneRandomPose::randomPose(void)
 	float x = urd_xy(mt);
 	float y = urd_xy(mt);
 	float z = urd_z(mt);
-	Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
+	msr::airlib::Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
 	/*teleport*/
 	client.simSetVehiclePose(pose, false);
 }
 
-void DroneRandomPose::printState(void)
+void DroneRandomPose::printPose(void)
 {
-	int state = _client.simGetVehiclePose();
+	msr::airlib::Pose pose = _client.simGetVehiclePose();
 	std::cout << "Position: "	//Eigen::Matrix<float, 3, 1>
-		<< state.kinematics_estimated.pose.position.x() << ", "
-		<< state.kinematics_estimated.pose.position.y() << ", "
-		<< state.kinematics_estimated.pose.position.z() << std::endl;
+		<< pose.position.x() << ", "
+		<< pose.position.y() << ", "
+		<< pose.position.z() << std::endl;
 	std::cout << "Orientation: "	//Eigen::Quaternionf
-		<< state.kinematics_estimated.pose.orientation.w() << ", "
-		<< state.kinematics_estimated.pose.orientation.x() << ", "
-		<< state.kinematics_estimated.pose.orientation.y() << ", "
-		<< state.kinematics_estimated.pose.orientation.z() << std::endl;
-	std::cout << "state.collision.has_collided = " << (bool)state.collision.has_collided << std::endl;
+		<< pose.orientation.w() << ", "
+		<< pose.orientation.x() << ", "
+		<< pose.orientation.y() << ", "
+		<< pose.orientation.z() << std::endl;
 }
 
 int main(void) 
