@@ -57,7 +57,7 @@ void DroneRandomPose::randomPose(void)
 	float z = urd_z(mt);
 	msr::airlib::Pose pose = Pose(Vector3r(x, y, z), Quaternionr(1, 0, 0, 0));
 	/*teleport*/
-	client.simSetVehiclePose(pose, false);
+	_client.simSetVehiclePose(pose, false);
 }
 
 void DroneRandomPose::printPose(void)
