@@ -35,8 +35,11 @@ void DroneRandomFlight::initialization(void)
 
 void DroneRandomFlight::startSampling(void)
 {
+	std::cout << "Start sampling" << std::endl;
+
 	const int num_sample = 10;
 	for(int i=0; i<num_sample; ++i){
+		std::cout << "--- sample " << i << " ---" << std::endl;
 		printState();
 		randomGlobalMove();
 		_client.simPause(true);
