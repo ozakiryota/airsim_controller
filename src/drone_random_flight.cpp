@@ -80,7 +80,14 @@ void DroneRandomFlight::randomGlobalMove(void)
 	float x = urd_xy(mt);
 	float y = urd_xy(mt);
 	float z = urd_z(mt);
-	/*print goal*/
+	/*set velocity*/
+	float dist = computeL2Norm(
+		x - state.kinematics_estimated.pose.position.x(),
+		y - state.kinematics_estimated.pose.position.y(),
+		0.0
+	);
+	float vel = dist/1.0;
+	/*print*/
 	std::cout << "Move to ("
 		<< x << ", "
 		<< y << ", "
@@ -89,7 +96,7 @@ void DroneRandomFlight::randomGlobalMove(void)
 		<< std::endl;
 	/*up to sky*/
 	const float sky_height = -20.0;
-	 _client.moveToZAsynci(sky_height, std::abs(sky_height)/1.0);
+	 _client.moveToZAsync(sky_height, std::abs(sky_height)/1.0);
 	/*move on xy plane*/
 	float dist = computeL2Norm(
 		x - state.kinematics_estimated.pose.position.x(),
@@ -99,7 +106,7 @@ void DroneRandomFlight::randomGlobalMove(void)
 	float vel = dist/1.0;
 	_client.moveToPositionAsync(x, y, z, vel)->waitOnLastTask();
 	/*up to sky*/
-	 _client.moveToZAsynci(z, std::abs(sky_height)/1.0);
+	 _client.moveToZAsync(z, std::abs(sky_height)/1.0);
 }
 
 void DroneRandomFlight::printState(void)
