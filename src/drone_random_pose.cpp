@@ -55,27 +55,16 @@ void DroneRandomPose::randomPose(void)
 	std::uniform_real_distribution<> urd_y(-M_PI, M_PI);
 	/*set pose*/
 	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt));
-	Eigen::Quaternionf orientation;
 	float roll = urd_rp(mt);
 	float pitch = urd_rp(mt);
 	float yaw = urd_y(mt);
+	Eigen::Quaternionf orientation;
 	eularToQuat(roll, pitch, yaw, orientation);
-	// eularToQuat(urd_rp(mt), urd_rp(mt), urd_z(mt), orientation);
 	msr::airlib::Pose pose = Pose(position, orientation);
-	std::cout << "Move to: "
-		<< "(position) " << pose.position << ", "
-		<< "(orientation) " << pose.orientation << std::endl;
-		/* << pose.position.x() << ", " */
-		/* << pose.position.y() << ", " */
-		/* << pose.position.z() << std::endl; */
-	std::cout << "RPY: "
-		<< roll << ", "
-		<< pitch << ", "
-		<< yaw << std::endl;
-	Eigen::Vector3f acEuler = Eigen::Matrix3f(orientation).eulerAngles(0,1,2);
-	std::cout << "acEuler = " << acEuler << std::endl;
-	acEuler = Eigen::Matrix3f(orientation).eulerAngles(2,1,0);
-	std::cout << "acEuler = " << acEuler << std::endl;
+	std::cout << "Move to: " << std::endl
+		<< "XYZ " << pose.position.x() << ", " << pose.position.y() << ", " << pose.position.z() << std::endl
+		<< "RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
+		<< "Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, true);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -84,7 +73,7 @@ void DroneRandomPose::randomPose(void)
 void DroneRandomPose::printPose(void)
 {
 	msr::airlib::Pose pose = _client.simGetVehiclePose();
-	std::cout << "Position: "	//Eigen::Matrix<float, 3, 1>
+	std::cout << "Position: "	//Eigen::Vector3f
 		<< pose.position.x() << ", "
 		<< pose.position.y() << ", "
 		<< pose.position.z() << std::endl;
@@ -97,9 +86,9 @@ void DroneRandomPose::printPose(void)
 
 void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
 {
-	q = Eigen::AngleAxisf(r, Eigen::Vector3f::UnitX())
+	q = Eigen::AngleAxisf(y, Eigen::Vector3f::UnitZ())
 		* Eigen::AngleAxisf(p, Eigen::Vector3f::UnitY())
-		* Eigen::AngleAxisf(y, Eigen::Vector3f::UnitZ());
+		* Eigen::AngleAxisf(r, Eigen::Vector3f::UnitX());
 }
 
 int main(void) 
