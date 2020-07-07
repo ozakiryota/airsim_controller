@@ -62,9 +62,9 @@ void DroneRandomPose::randomPose(void)
 	eularToQuat(roll, pitch, yaw, orientation);
 	msr::airlib::Pose pose = Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
-		<< "XYZ " << pose.position.x() << ", " << pose.position.y() << ", " << pose.position.z() << std::endl
-		<< "RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
-		<< "Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
+		<< " XYZ " << pose.position.x() << ", " << pose.position.y() << ", " << pose.position.z() << std::endl
+		<< " RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
+		<< " Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, true);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -73,11 +73,12 @@ void DroneRandomPose::randomPose(void)
 void DroneRandomPose::printPose(void)
 {
 	msr::airlib::Pose pose = _client.simGetVehiclePose();
-	std::cout << "Position: "	//Eigen::Vector3f
+	std::cout << "State: " << std::endl
+	std::cout << " Position: "	//Eigen::Vector3f
 		<< pose.position.x() << ", "
 		<< pose.position.y() << ", "
 		<< pose.position.z() << std::endl;
-	std::cout << "Orientation: "	//Eigen::Quaternionf
+	std::cout << " Orientation: "	//Eigen::Quaternionf
 		<< pose.orientation.w() << ", "
 		<< pose.orientation.x() << ", "
 		<< pose.orientation.y() << ", "
