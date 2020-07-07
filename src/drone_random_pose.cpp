@@ -39,6 +39,7 @@ void DroneRandomPose::startSampling(void)
 	for(int i=0; i<num_sample; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
+		if(_save_image)	saveData();
 		printPose();
 	}
 }
@@ -77,10 +78,10 @@ void DroneRandomPose::randomPose(void)
 void DroneRandomPose::saveData(void)
 {
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = {
-		ImageRequest("front_center_custom", ImageType::Scene)
+		msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene)
 	};
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
-	for(const ImageResponse& response : list_response){
+	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
 		std::string root_path = "/home/airsim/airsim_controller/save";
 		std::string save_path = root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
 		std::ofstream file(save_path, std::ios::binary);
