@@ -1,50 +1,84 @@
 #include <iostream>
 #include "api/RpcLibClientBase.hpp"
+#include <fstream>
 #include <opencv2/opencv.hpp>
 
 class DroneRandomPose{
 	private:
 		/*client*/
 		msr::airlib::RpcLibClientBase _client;
+		/*state*/
+		msr::airlib::Pose _pose;
+		msr::airlib::ImuBase::Output _imu;;
+		/*list*/
+		std::vector _list_camera;
+		/*csv*/
+		std::ofstream _csvfile;
 		/*parameter*/
-		bool _save_image = true;
+		bool _save_data = true;
+		int _num_sampling = 10;
 		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save";
+		std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
 
 	public:
 		DroneRandomPose();
-		void initialization(void);
+		void clientInitialization(void);
+		void csvInitialization(void);
 		void startSampling(void);
 		void randomPose(void);
 		void saveData(void);
-		void printPose(void);
+		void updateState(void);
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
 
 DroneRandomPose::DroneRandomPose()
 {
-	/*initialize*/
-	initialization();
+	std::cout << "----- drone_random_pose -----" << std::endl;
+	/*client*/
+	clientInitialization();
+	/*camera list*/
+	_list_camera = {
+		"front_center_custom"
+	};
+	/*csv*/
+	if(_save_data)	csvInitialization();
 }
 
-void DroneRandomPose::initialization(void)
+void DroneRandomPose::clientInitialization(void)
 {
 	_client.confirmConnection();
 	std::cout << "Reset" << std::endl;
 	_client.reset();
-	printPose();
+	updateState();
+}
+
+void DroneRandomPose::csvInitialization(void)
+{
+	/*check*/
+	std::ifstream ifs(_save_csv_path);
+	if(ifs.is_open()){
+		std::cout << _save_csv_path << " already exists" << std::endl;
+		exit(1);
+	}
+	/*open*/
+	_csvfile.open(_save_csv_path, std::ios::out);
+	if(!_csvfile){
+		std::cout << "Cannot open " << _save_csv_path << std::endl;
+		exit(1);
+	}
 }
 
 void DroneRandomPose::startSampling(void)
 {
 	std::cout << "Start sampling" << std::endl;
 
-	const int num_sample = 10;
-	for(int i=0; i<num_sample; ++i){
+	for(int i=0; i<_num_sampling; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
-		if(_save_image)	saveData();
-		printPose();
+		if(_save_data)	saveData();
+		updateState();
 	}
+	_csvfile.close();
 }
 
 void DroneRandomPose::randomPose(void)
@@ -81,12 +115,17 @@ void DroneRandomPose::randomPose(void)
 
 void DroneRandomPose::saveData(void)
 {
+	/*file name*/
+	std::vector<std::string> list_img_name(_list_camera.size());
+	/*image request*/
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = {
 		msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene, false, false)
 	};
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
+	/*access each image*/
 	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
 		std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
+		/*std::vector -> cv::mat*/
 		cv::Mat img_cv = cv::Mat(response.height, response.width, CV_8UC3);
 		for(int row=0; row<response.height; ++row){
 			for(int col=0; col<response.width; ++col){
@@ -101,12 +140,19 @@ void DroneRandomPose::saveData(void)
 		// std::cout << "height: " << response.height << std::endl;
 		// std::cout << "width: " << response.width << std::endl;
 	}
+
+	/*imu with other*/
+	_csvfile 
+		<< _imu.linear_acceleration.x << "," 
+		<< _imu.linear_acceleration.y << "," 
+		<< _imu.linear_acceleration.z << ","
+		<< std::endl;
 }
 
-void DroneRandomPose::printPose(void)
+void DroneRandomPose::updateState(void)
 {
 	/*pose*/
-	msr::airlib::Pose pose = _client.simGetVehiclePose();
+	_pose = _client.simGetVehiclePose();
 	std::cout << "Pose: " << std::endl;
 	std::cout << " Position: "	//Eigen::Vector3f
 		<< pose.position.x() << ", "
@@ -117,8 +163,8 @@ void DroneRandomPose::printPose(void)
 		<< pose.orientation.x() << ", "
 		<< pose.orientation.y() << ", "
 		<< pose.orientation.z() << std::endl;
-	/*IMU*/
-	msr::airlib::ImuBase::Output imu = _client.getImuData();
+	/*imu*/
+	_imu = _client.getImuData();
 	std::cout << "IMU: " << std::endl;
 	std::cout << " linear_acceleration: "	//Eigen::Vector3f
 		<< imu.linear_acceleration.x() << ", "
