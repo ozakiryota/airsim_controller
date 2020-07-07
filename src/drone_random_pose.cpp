@@ -143,9 +143,9 @@ void DroneRandomPose::saveData(void)
 
 	/*imu with other*/
 	_csvfile 
-		<< _imu.linear_acceleration.x << "," 
-		<< _imu.linear_acceleration.y << "," 
-		<< _imu.linear_acceleration.z << ","
+		<< _imu.linear_acceleration.x() << "," 
+		<< _imu.linear_acceleration.y() << "," 
+		<< _imu.linear_acceleration.z() << ","
 		<< std::endl;
 }
 
@@ -167,9 +167,9 @@ void DroneRandomPose::updateState(void)
 	_imu = _client.getImuData();
 	std::cout << "IMU: " << std::endl;
 	std::cout << " linear_acceleration: "	//Eigen::Vector3f
-		<< imu.linear_acceleration.x() << ", "
-		<< imu.linear_acceleration.y() << ", "
-		<< imu.linear_acceleration.z() << std::endl;
+		<< _imu.linear_acceleration.x() << ", "
+		<< _imu.linear_acceleration.y() << ", "
+		<< _imu.linear_acceleration.z() << std::endl;
 }
 
 void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
