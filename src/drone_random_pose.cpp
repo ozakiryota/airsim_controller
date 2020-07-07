@@ -48,7 +48,7 @@ void DroneRandomPose::startSampling(void)
 void DroneRandomPose::randomPose(void)
 {
 	/*parameter*/
-	const float xy_range = 100.0;
+	const float xy_range = 200.0;
 	const float z_min = -3.0;
 	const float z_max = -2.0;
 	const float rp_range = M_PI/4.0;
@@ -73,7 +73,8 @@ void DroneRandomPose::randomPose(void)
 		<< " Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(pose, false);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	// std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 void DroneRandomPose::saveData(void)
