@@ -1,11 +1,11 @@
 #include <iostream>
-#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+#include "api/RpcLibClientBase.hpp"
 #include <opencv2/opencv.hpp>
 
 class DroneRandomPose{
 	private:
 		/*client*/
-		RpcLibClientBase _client;
+		msr::airlib::RpcLibClientBase _client;
 		/*parameter*/
 		bool _save_image = true;
 		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save";
@@ -68,7 +68,7 @@ void DroneRandomPose::randomPose(void)
 	float yaw = urd_y(mt);
 	Eigen::Quaternionf orientation;
 	eularToQuat(roll, pitch, yaw, orientation);
-	msr::airlib::Pose pose = Pose(position, orientation);
+	msr::airlib::Pose pose = msr::airlib::Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
 		<< " XYZ " << pose.position.x() << ", " << pose.position.y() << ", " << pose.position.z() << std::endl
 		<< " RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
