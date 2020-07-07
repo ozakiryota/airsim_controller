@@ -86,11 +86,20 @@ void DroneRandomPose::saveData(void)
 	};
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
-		std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".png";
-		std::ofstream file(save_path, std::ios::binary);
-		file.write(reinterpret_cast<const char*>(response.image_data_uint8.data()), response.image_data_uint8.size());
-		file.close();
+		std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
+		cv::Mat img_cv = cv::Mat(response.height, response.width, CV_8UC3);
+		for(int row=0; row<response.height; ++row){
+			for(int col=0; col<response.width; ++col){
+				img_cv.at<cv::Vec3b>(row, col)[0] = response.image_data_uint8[3*row*response.width + 3*col + 0];
+				img_cv.at<cv::Vec3b>(row, col)[1] = response.image_data_uint8[3*row*response.width + 3*col + 1];
+				img_cv.at<cv::Vec3b>(row, col)[2] = response.image_data_uint8[3*row*response.width + 3*col + 2];
+			}
+		}
 		std::cout << "Save: " << save_path << std::endl;
+		cv::imwrite(save_path, img_cv);              
+		// std::cout << "size: " << response.image_data_uint8.size() << std::endl;
+		// std::cout << "height: " << response.height << std::endl;
+		// std::cout << "width: " << response.width << std::endl;
 	}
 }
 

@@ -34,4 +34,4 @@ add_executable(drone_random_flight src/drone_random_flight.cpp)
 target_link_libraries(drone_random_flight AirLib rpc)
 #
 add_executable(drone_random_pose src/drone_random_pose.cpp)
-target_link_libraries(drone_random_pose AirLib rpc ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(drone_random_pose AirLib rpc ${OpenCV_LIBRARIES})
