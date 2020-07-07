@@ -63,4 +63,4 @@ RUN cd /home/airsim_ws &&\
 	cmake .. &&\
 	make -j $(nproc --all)
 ######### initial position ##########
-WORKDIR /home/airsim_ws
+WORKDIR /home/airsim_ws/airsim_controller/build

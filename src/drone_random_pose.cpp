@@ -75,8 +75,8 @@ void DroneRandomPose::startSampling(void)
 	for(int i=0; i<_num_sampling; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
-		if(_save_data)	saveData();
 		updateState();
+		if(_save_data)	saveData();
 	}
 	_csvfile.close();
 }
