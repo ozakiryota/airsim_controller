@@ -73,7 +73,7 @@ void DroneRandomPose::randomPose(void)
 void DroneRandomPose::printPose(void)
 {
 	msr::airlib::Pose pose = _client.simGetVehiclePose();
-	std::cout << "State: " << std::endl
+	std::cout << "State: " << std::endl;
 	std::cout << " Position: "	//Eigen::Vector3f
 		<< pose.position.x() << ", "
 		<< pose.position.y() << ", "
