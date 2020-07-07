@@ -82,7 +82,7 @@ void DroneRandomPose::randomPose(void)
 void DroneRandomPose::saveData(void)
 {
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = {
-		msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene)
+		msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene, false, false)
 	};
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
