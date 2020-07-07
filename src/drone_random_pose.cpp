@@ -11,7 +11,7 @@ class DroneRandomPose{
 		msr::airlib::Pose _pose;
 		msr::airlib::ImuBase::Output _imu;;
 		/*list*/
-		std::vector _list_camera;
+		std::vector<std::string> _list_camera;
 		/*csv*/
 		std::ofstream _csvfile;
 		/*parameter*/
@@ -102,13 +102,13 @@ void DroneRandomPose::randomPose(void)
 	float yaw = urd_y(mt);
 	Eigen::Quaternionf orientation;
 	eularToQuat(roll, pitch, yaw, orientation);
-	msr::airlib::Pose pose = msr::airlib::Pose(position, orientation);
+	msr::airlib::Pose goal = msr::airlib::Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
-		<< " XYZ " << pose.position.x() << ", " << pose.position.y() << ", " << pose.position.z() << std::endl
+		<< " XYZ " << goal.position.x() << ", " << goal.position.y() << ", " << goal.position.z() << std::endl
 		<< " RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
-		<< " Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
+		<< " Quat: " << goal.orientation.w() << ", " << goal.orientation.x() << ", " << goal.orientation.y() << ", " << goal.orientation.z() << std::endl;
 	/*teleport*/
-	_client.simSetVehiclePose(pose, true);
+	_client.simSetVehiclePose(goal, true);
 	// std::this_thread::sleep_for(std::chrono::seconds(1));
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
@@ -155,14 +155,14 @@ void DroneRandomPose::updateState(void)
 	_pose = _client.simGetVehiclePose();
 	std::cout << "Pose: " << std::endl;
 	std::cout << " Position: "	//Eigen::Vector3f
-		<< pose.position.x() << ", "
-		<< pose.position.y() << ", "
-		<< pose.position.z() << std::endl;
+		<< _pose.position.x() << ", "
+		<< _pose.position.y() << ", "
+		<< _pose.position.z() << std::endl;
 	std::cout << " Orientation: "	//Eigen::Quaternionf
-		<< pose.orientation.w() << ", "
-		<< pose.orientation.x() << ", "
-		<< pose.orientation.y() << ", "
-		<< pose.orientation.z() << std::endl;
+		<< _pose.orientation.w() << ", "
+		<< _pose.orientation.x() << ", "
+		<< _pose.orientation.y() << ", "
+		<< _pose.orientation.z() << std::endl;
 	/*imu*/
 	_imu = _client.getImuData();
 	std::cout << "IMU: " << std::endl;
