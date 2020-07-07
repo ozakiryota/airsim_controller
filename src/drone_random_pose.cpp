@@ -7,7 +7,7 @@ class DroneRandomPose{
 		/*client*/
 		RpcLibClientBase _client;
 		/*parameter*/
-		bool _save_image = false;
+		bool _save_image = true;
 		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save";
 
 	public:
@@ -74,7 +74,7 @@ void DroneRandomPose::randomPose(void)
 		<< " RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
 		<< " Quat: " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
 	/*teleport*/
-	_client.simSetVehiclePose(pose, false);
+	_client.simSetVehiclePose(pose, true);
 	// std::this_thread::sleep_for(std::chrono::seconds(1));
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
