@@ -7,6 +7,7 @@ class DroneRandomPose{
 		RpcLibClientBase _client;
 		/*parameter*/
 		bool _save_image = true;
+		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save";
 
 	public:
 		DroneRandomPose();
@@ -82,11 +83,11 @@ void DroneRandomPose::saveData(void)
 	};
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
-		std::string root_path = "/home/airsim/airsim_controller/save";
-		std::string save_path = root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
+		std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".png";
 		std::ofstream file(save_path, std::ios::binary);
 		file.write(reinterpret_cast<const char*>(response.image_data_uint8.data()), response.image_data_uint8.size());
 		file.close();
+		std::cout << "Save: " << save_path << std::endl;
 	}
 
 }
