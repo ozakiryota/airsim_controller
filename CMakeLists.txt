@@ -3,6 +3,10 @@ project(airsim_controller)
 
 add_compile_options(-std=c++11)
 
+find_package(
+	OpenCV
+)
+
 # set(AIRSIM_ROOT ../AirSim)
 find_path(AIRSIM_ROOT
 	NAMES AirSim.sln 
@@ -20,6 +24,7 @@ include_directories(
 	${AIRSIM_ROOT}/MavLinkCom/include
 	${AIRSIM_ROOT}/MavLinkCom/common_utils
 	${AIRSIM_ROOT}/AirLib/deps/eigen3
+	${OpenCV_INCLUDE_DIRS}
 )
 
 add_executable(hello_drone src/hello_drone.cpp)
@@ -29,4 +34,4 @@ add_executable(drone_random_flight src/drone_random_flight.cpp)
 target_link_libraries(drone_random_flight AirLib rpc)
 #
 add_executable(drone_random_pose src/drone_random_pose.cpp)
-target_link_libraries(drone_random_pose AirLib rpc)
+target_link_libraries(drone_random_pose AirLib rpc ${OpenCV_INCLUDE_DIRS})

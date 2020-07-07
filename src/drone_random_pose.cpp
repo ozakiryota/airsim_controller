@@ -1,5 +1,6 @@
 #include <iostream>
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+#include <opencv2/opencv.hpp>
 
 class DroneRandomPose{
 	private:
@@ -30,6 +31,7 @@ void DroneRandomPose::initialization(void)
 	_client.confirmConnection();
 	std::cout << "Reset" << std::endl;
 	_client.reset();
+	printPose();
 }
 
 void DroneRandomPose::startSampling(void)
@@ -90,7 +92,6 @@ void DroneRandomPose::saveData(void)
 		file.close();
 		std::cout << "Save: " << save_path << std::endl;
 	}
-
 }
 
 void DroneRandomPose::printPose(void)
