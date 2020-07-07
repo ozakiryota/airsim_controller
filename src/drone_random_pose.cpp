@@ -3,13 +3,17 @@
 
 class DroneRandomPose{
 	private:
+		/*client*/
 		RpcLibClientBase _client;
+		/*parameter*/
+		bool _save_image = true;
 
 	public:
 		DroneRandomPose();
 		void initialization(void);
 		void startSampling(void);
 		void randomPose(void);
+		void saveData(void);
 		void printPose(void);
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
@@ -70,10 +74,27 @@ void DroneRandomPose::randomPose(void)
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
+void DroneRandomPose::saveData(void)
+{
+	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = {
+		ImageRequest("front_center_custom", ImageType::Scene)
+	};
+	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
+	for(const ImageResponse& response : list_response){
+		std::string root_path = "/home/airsim/airsim_controller/save";
+		std::string save_path = root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
+		std::ofstream file(save_path, std::ios::binary);
+		file.write(reinterpret_cast<const char*>(response.image_data_uint8.data()), response.image_data_uint8.size());
+		file.close();
+	}
+
+}
+
 void DroneRandomPose::printPose(void)
 {
+	/*pose*/
 	msr::airlib::Pose pose = _client.simGetVehiclePose();
-	std::cout << "State: " << std::endl;
+	std::cout << "Pose: " << std::endl;
 	std::cout << " Position: "	//Eigen::Vector3f
 		<< pose.position.x() << ", "
 		<< pose.position.y() << ", "
@@ -83,6 +104,13 @@ void DroneRandomPose::printPose(void)
 		<< pose.orientation.x() << ", "
 		<< pose.orientation.y() << ", "
 		<< pose.orientation.z() << std::endl;
+	/*IMU*/
+	msr::airlib::ImuBase::Output imu = _client.getImuData();
+	std::cout << "IMU: " << std::endl;
+	std::cout << " linear_acceleration: "	//Eigen::Vector3f
+		<< imu.linear_acceleration.x() << ", "
+		<< imu.linear_acceleration.y() << ", "
+		<< imu.linear_acceleration.z() << std::endl;
 }
 
 void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
