@@ -12,9 +12,11 @@ class DroneRandomPose{
 		msr::airlib::ImuBase::Output _imu;;
 		/*list*/
 		std::vector<std::string> _list_camera;
+		std::vector<msr::airlib::WorldSimApiBase::WeatherParameter> _list_weather;
 		/*csv*/
 		std::ofstream _csvfile;
 		/*parameter*/
+		bool _randomize_whether = true;
 		bool _save_data = true;
 		int _num_sampling = 10;
 		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save";
@@ -25,6 +27,7 @@ class DroneRandomPose{
 		void clientInitialization(void);
 		void csvInitialization(void);
 		void startSampling(void);
+		void randomWhether(void);
 		void randomPose(void);
 		void saveData(void);
 		void updateState(void);
@@ -46,10 +49,28 @@ DroneRandomPose::DroneRandomPose()
 
 void DroneRandomPose::clientInitialization(void)
 {
+	/*connect*/
 	_client.confirmConnection();
+	/*reset*/
 	std::cout << "Reset" << std::endl;
 	_client.reset();
+	/*pose*/
+	msr::airlib::Pose goal = msr::airlib::Pose(Eigen::Vector3f(0.0, 0.0, 0.0), Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	updateState();
+	/*weather*/
+	if(_randomize_whether)	_client.simEnableWeather(true);
+	_list_weather = {
+		msr::airlib::WorldSimApiBase::WeatherParameter::Rain,
+		msr::airlib::WorldSimApiBase::WeatherParameter::Roadwetness,
+		msr::airlib::WorldSimApiBase::WeatherParameter::Snow,
+		msr::airlib::WorldSimApiBase::WeatherParameter::RoadSnow,
+		msr::airlib::WorldSimApiBase::WeatherParameter::MapleLeaf,
+		msr::airlib::WorldSimApiBase::WeatherParameter::RoadLeaf,
+		msr::airlib::WorldSimApiBase::WeatherParameter::Dust,
+		msr::airlib::WorldSimApiBase::WeatherParameter::Fog,
+		msr::airlib::WorldSimApiBase::WeatherParameter::Enabled
+	};
 }
 
 void DroneRandomPose::csvInitialization(void)
@@ -74,6 +95,7 @@ void DroneRandomPose::startSampling(void)
 
 	for(int i=0; i<_num_sampling; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
+		if(_randomize_whether)	randomWhether();
 		randomPose();
 		_client.simPause(true);
 		updateState();
@@ -81,6 +103,20 @@ void DroneRandomPose::startSampling(void)
 		_client.simPause(false);
 	}
 	_csvfile.close();
+}
+
+void DroneRandomPose::randomWhether(void)
+{
+	/*random*/
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_int_distribution<> uid_index(0, _list_weather.size()-1);
+	std::uniform_real_distribution<> urd_val(0.0, 1.0);
+	int weather_index = uid_index(mt);
+	double weather_val = urd_val(mt);
+	/*set*/
+	if(_list_weather[i] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
+	client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
 }
 
 void DroneRandomPose::randomPose(void)
@@ -111,7 +147,7 @@ void DroneRandomPose::randomPose(void)
 		<< " Quat: " << goal.orientation.w() << ", " << goal.orientation.x() << ", " << goal.orientation.y() << ", " << goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void DroneRandomPose::saveData(void)
