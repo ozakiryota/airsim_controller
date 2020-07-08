@@ -114,7 +114,7 @@ void DroneRandomPose::randomWeather(void)
 	std::mt19937 mt(rd());
 	std::uniform_int_distribution<> uid_index(0, _list_weather.size()-1);
 	std::uniform_real_distribution<> urd_val(0.0, 1.0);
-	for(int i=0; i<=uid_index(mt); ++i){
+	for(int i=1; i<=uid_index(mt); ++i){
 		int weather_index = uid_index(mt);
 		double weather_val = urd_val(mt);
 		_client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
