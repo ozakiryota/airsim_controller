@@ -115,16 +115,23 @@ void DroneRandomPose::randomPose(void)
 
 void DroneRandomPose::saveData(void)
 {
-	/*file name*/
+	/*list*/
 	std::vector<std::string> list_img_name(_list_camera.size());
-	/*image request*/
-	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = {
-		msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene, false, false)
-	};
+	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request(_list_camera.size());
+	/*image request-responce*/
+	/* std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = { */
+	/* 	msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene, false, false) */
+	/* }; */
+	for(size_t i=0; i<_list_camera.size(); ++i){
+		list_request[i] = msr::airlib::ImageCaptureBase::ImageRequest(_list_camera[i], msr::airlib::ImageCaptureBase::ImageType::Scene, false, false);
+	}
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	/*access each image*/
-	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){
-		std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg";
+	for(size_t i=0; i<list_response.size(); ++i){
+	/* for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){ */
+		/* std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg"; */
+		list_img_name[i] = std::to_string(response.time_stamp) + "_" +  _list_camera[i] + ".jpg";
+		std::string save_path = _save_root_path + "/" + list_img_name[i];
 		/*std::vector -> cv::mat*/
 		cv::Mat img_cv = cv::Mat(response.height, response.width, CV_8UC3);
 		for(int row=0; row<response.height; ++row){
@@ -145,8 +152,11 @@ void DroneRandomPose::saveData(void)
 	_csvfile 
 		<< _imu.linear_acceleration.x() << "," 
 		<< _imu.linear_acceleration.y() << "," 
-		<< _imu.linear_acceleration.z() << ","
-		<< std::endl;
+		<< -_imu.linear_acceleration.z() << ",";
+	for(size_t i=0; i<list_img_name.size(); ++i){
+		_csvfile << list_img_name[i];
+	}
+	_csvfile << std::endl;
 }
 
 void DroneRandomPose::updateState(void)
