@@ -27,7 +27,7 @@ class DroneRandomPose{
 		void clientInitialization(void);
 		void csvInitialization(void);
 		void startSampling(void);
-		void randomWhether(void);
+		void randomWeather(void);
 		void randomPose(void);
 		void saveData(void);
 		void updateState(void);
@@ -95,7 +95,7 @@ void DroneRandomPose::startSampling(void)
 
 	for(int i=0; i<_num_sampling; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
-		if(_randomize_whether)	randomWhether();
+		if(_randomize_whether)	randomWeather();
 		randomPose();
 		_client.simPause(true);
 		updateState();
@@ -105,8 +105,10 @@ void DroneRandomPose::startSampling(void)
 	_csvfile.close();
 }
 
-void DroneRandomPose::randomWhether(void)
+void DroneRandomPose::randomWeather(void)
 {
+	/*reset*/
+	for(size_t i=0; i<_list_weather.size(); ++i)	_client.simSetWeatherParameter(_list_weather[i], 0.0);
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
@@ -115,7 +117,7 @@ void DroneRandomPose::randomWhether(void)
 	int weather_index = uid_index(mt);
 	double weather_val = urd_val(mt);
 	/*set*/
-	if(_list_weather[weather_index] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
+	//if(_list_weather[weather_index] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
 	_client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
 }
 
