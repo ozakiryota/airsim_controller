@@ -111,7 +111,7 @@ void DroneRandomPose::randomPose(void)
 		<< " Quat: " << goal.orientation.w() << ", " << goal.orientation.x() << ", " << goal.orientation.y() << ", " << goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 void DroneRandomPose::saveData(void)
