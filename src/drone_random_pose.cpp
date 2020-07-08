@@ -130,15 +130,15 @@ void DroneRandomPose::saveData(void)
 	for(size_t i=0; i<list_response.size(); ++i){
 	/* for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){ */
 		/* std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg"; */
-		list_img_name[i] = std::to_string(response.time_stamp) + "_" +  _list_camera[i] + ".jpg";
+		list_img_name[i] = std::to_string(response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
 		/*std::vector -> cv::mat*/
-		cv::Mat img_cv = cv::Mat(response.height, response.width, CV_8UC3);
-		for(int row=0; row<response.height; ++row){
-			for(int col=0; col<response.width; ++col){
-				img_cv.at<cv::Vec3b>(row, col)[0] = response.image_data_uint8[3*row*response.width + 3*col + 0];
-				img_cv.at<cv::Vec3b>(row, col)[1] = response.image_data_uint8[3*row*response.width + 3*col + 1];
-				img_cv.at<cv::Vec3b>(row, col)[2] = response.image_data_uint8[3*row*response.width + 3*col + 2];
+		cv::Mat img_cv = cv::Mat(response[i].height, response[i].width, CV_8UC3);
+		for(int row=0; row<response[i].height; ++row){
+			for(int col=0; col<response[i].width; ++col){
+				img_cv.at<cv::Vec3b>(row, col)[0] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 0];
+				img_cv.at<cv::Vec3b>(row, col)[1] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 1];
+				img_cv.at<cv::Vec3b>(row, col)[2] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 2];
 			}
 		}
 		std::cout << "Save: " << save_path << std::endl;
