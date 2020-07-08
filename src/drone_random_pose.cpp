@@ -115,8 +115,8 @@ void DroneRandomPose::randomWhether(void)
 	int weather_index = uid_index(mt);
 	double weather_val = urd_val(mt);
 	/*set*/
-	if(_list_weather[i] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
-	client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
+	if(_list_weather[weather_index] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
+	_client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
 }
 
 void DroneRandomPose::randomPose(void)
