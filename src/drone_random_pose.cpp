@@ -38,7 +38,7 @@ DroneRandomPose::DroneRandomPose()
 	clientInitialization();
 	/*camera list*/
 	_list_camera = {
-		"front_center_custom"
+		"camera_0"
 	};
 	/*csv*/
 	if(_save_data)	csvInitialization();
@@ -55,13 +55,13 @@ void DroneRandomPose::clientInitialization(void)
 void DroneRandomPose::csvInitialization(void)
 {
 	/*check*/
-	std::ifstream ifs(_save_csv_path);
-	if(ifs.is_open()){
-		std::cout << _save_csv_path << " already exists" << std::endl;
-		exit(1);
-	}
+	//std::ifstream ifs(_save_csv_path);
+	//if(ifs.is_open()){
+	//	std::cout << _save_csv_path << " already exists" << std::endl;
+	//	exit(1);
+	//}
 	/*open*/
-	_csvfile.open(_save_csv_path, std::ios::out);
+	_csvfile.open(_save_csv_path, std::ios::app);
 	if(!_csvfile){
 		std::cout << "Cannot open " << _save_csv_path << std::endl;
 		exit(1);
@@ -75,8 +75,10 @@ void DroneRandomPose::startSampling(void)
 	for(int i=0; i<_num_sampling; ++i){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		randomPose();
+		_client.simPause(true);
 		updateState();
 		if(_save_data)	saveData();
+		_client.simPause(false);
 	}
 	_csvfile.close();
 }
@@ -109,8 +111,7 @@ void DroneRandomPose::randomPose(void)
 		<< " Quat: " << goal.orientation.w() << ", " << goal.orientation.x() << ", " << goal.orientation.y() << ", " << goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	// std::this_thread::sleep_for(std::chrono::seconds(1));
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void DroneRandomPose::saveData(void)
@@ -119,17 +120,12 @@ void DroneRandomPose::saveData(void)
 	std::vector<std::string> list_img_name(_list_camera.size());
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request(_list_camera.size());
 	/*image request-responce*/
-	/* std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request = { */
-	/* 	msr::airlib::ImageCaptureBase::ImageRequest("front_center_custom", msr::airlib::ImageCaptureBase::ImageType::Scene, false, false) */
-	/* }; */
 	for(size_t i=0; i<_list_camera.size(); ++i){
 		list_request[i] = msr::airlib::ImageCaptureBase::ImageRequest(_list_camera[i], msr::airlib::ImageCaptureBase::ImageType::Scene, false, false);
 	}
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	/*access each image*/
 	for(size_t i=0; i<list_response.size(); ++i){
-	/* for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){ */
-		/* std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg"; */
 		list_img_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
 		/*std::vector -> cv::mat*/
