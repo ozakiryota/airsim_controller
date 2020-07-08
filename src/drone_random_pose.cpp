@@ -68,19 +68,19 @@ void DroneRandomPose::clientInitialization(void)
 		msr::airlib::WorldSimApiBase::WeatherParameter::MapleLeaf,
 		msr::airlib::WorldSimApiBase::WeatherParameter::RoadLeaf,
 		msr::airlib::WorldSimApiBase::WeatherParameter::Dust,
-		msr::airlib::WorldSimApiBase::WeatherParameter::Fog,
-		msr::airlib::WorldSimApiBase::WeatherParameter::Enabled
+		msr::airlib::WorldSimApiBase::WeatherParameter::Fog
+		// msr::airlib::WorldSimApiBase::WeatherParameter::Enabled
 	};
 }
 
 void DroneRandomPose::csvInitialization(void)
 {
 	/*check*/
-	//std::ifstream ifs(_save_csv_path);
-	//if(ifs.is_open()){
+	// std::ifstream ifs(_save_csv_path);
+	// if(ifs.is_open()){
 	//	std::cout << _save_csv_path << " already exists" << std::endl;
 	//	exit(1);
-	//}
+	// }
 	/*open*/
 	_csvfile.open(_save_csv_path, std::ios::app);
 	if(!_csvfile){
@@ -114,11 +114,11 @@ void DroneRandomPose::randomWeather(void)
 	std::mt19937 mt(rd());
 	std::uniform_int_distribution<> uid_index(0, _list_weather.size()-1);
 	std::uniform_real_distribution<> urd_val(0.0, 1.0);
-	int weather_index = uid_index(mt);
-	double weather_val = urd_val(mt);
-	/*set*/
-	//if(_list_weather[weather_index] == msr::airlib::WorldSimApiBase::WeatherParameter::Enabled)	weather_val = 0.0;	//sunny
-	_client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
+	for(int i=0; i<=uid_index(mt); ++i){
+		int weather_index = uid_index(mt);
+		double weather_val = urd_val(mt);
+		_client.simSetWeatherParameter(_list_weather[weather_index], weather_val);
+	}
 }
 
 void DroneRandomPose::randomPose(void)
