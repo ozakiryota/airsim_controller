@@ -71,6 +71,8 @@ void DroneRandomPose::clientInitialization(void)
 		msr::airlib::WorldSimApiBase::WeatherParameter::Fog
 		// msr::airlib::WorldSimApiBase::WeatherParameter::Enabled
 	};
+	/*time*/
+	// _client.simSetTimeOfDay(true, "2018-02-12 15:20:00", false, 1000.0, 0.1, true);
 }
 
 void DroneRandomPose::csvInitialization(void)
