@@ -130,22 +130,22 @@ void DroneRandomPose::saveData(void)
 	for(size_t i=0; i<list_response.size(); ++i){
 	/* for(const msr::airlib::ImageCaptureBase::ImageResponse& response : list_response){ */
 		/* std::string save_path = _save_root_path + "/" + std::to_string(response.time_stamp) + ".jpg"; */
-		list_img_name[i] = std::to_string(response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
+		list_img_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
 		/*std::vector -> cv::mat*/
-		cv::Mat img_cv = cv::Mat(response[i].height, response[i].width, CV_8UC3);
-		for(int row=0; row<response[i].height; ++row){
-			for(int col=0; col<response[i].width; ++col){
-				img_cv.at<cv::Vec3b>(row, col)[0] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 0];
-				img_cv.at<cv::Vec3b>(row, col)[1] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 1];
-				img_cv.at<cv::Vec3b>(row, col)[2] = response[i].image_data_uint8[3*row*response[i].width + 3*col + 2];
+		cv::Mat img_cv = cv::Mat(list_response[i].height, list_response[i].width, CV_8UC3);
+		for(int row=0; row<list_response[i].height; ++row){
+			for(int col=0; col<list_response[i].width; ++col){
+				img_cv.at<cv::Vec3b>(row, col)[0] = list_response[i].image_data_uint8[3*row*list_response[i].width + 3*col + 0];
+				img_cv.at<cv::Vec3b>(row, col)[1] = list_response[i].image_data_uint8[3*row*list_response[i].width + 3*col + 1];
+				img_cv.at<cv::Vec3b>(row, col)[2] = list_response[i].image_data_uint8[3*row*list_response[i].width + 3*col + 2];
 			}
 		}
 		std::cout << "Save: " << save_path << std::endl;
 		cv::imwrite(save_path, img_cv);              
-		// std::cout << "size: " << response.image_data_uint8.size() << std::endl;
-		// std::cout << "height: " << response.height << std::endl;
-		// std::cout << "width: " << response.width << std::endl;
+		// std::cout << "size: " << list_response[i].image_data_uint8.size() << std::endl;
+		// std::cout << "height: " << list_response[i].height << std::endl;
+		// std::cout << "width: " << list_response[i].width << std::endl;
 	}
 
 	/*imu with other*/
