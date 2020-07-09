@@ -129,7 +129,7 @@ void DroneRandomPose::randomPose(void)
 	const float xy_range = 200.0;
 	const float z_min = -3.0;
 	const float z_max = -2.0;
-	const float rp_range = M_PI/4.0;
+	const float rp_range = M_PI/6.0;
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
@@ -146,9 +146,19 @@ void DroneRandomPose::randomPose(void)
 	eularToQuat(roll, pitch, yaw, orientation);
 	msr::airlib::Pose goal = msr::airlib::Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
-		<< " XYZ " << goal.position.x() << ", " << goal.position.y() << ", " << goal.position.z() << std::endl
-		<< " RPY: " << roll << ", " << pitch << ", " << yaw << std::endl
-		<< " Quat: " << goal.orientation.w() << ", " << goal.orientation.x() << ", " << goal.orientation.y() << ", " << goal.orientation.z() << std::endl;
+		<< " XYZ[m]: " 
+			<< goal.position.x() << ", "
+			<< goal.position.y() << ", "
+			<< goal.position.z() << std::endl
+		<< " RPY[deg]: "
+			<< roll/M_PI*180.0 << ", "
+			<< pitch/M_PI*180.0 << ", "
+			<< yaw/M_PI*180.0 << std::endl
+		<< " Quat: "
+			<< goal.orientation.w() << ", "
+			<< goal.orientation.x() << ", "
+			<< goal.orientation.y() << ", "
+			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
