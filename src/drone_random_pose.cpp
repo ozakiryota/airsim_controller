@@ -18,7 +18,7 @@ class DroneRandomPose{
 		/*parameter*/
 		bool _randomize_whether = true;
 		bool _save_data = true;
-		int _num_sampling = 10;
+		int _num_sampling = 100;
 		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
 		std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
 
