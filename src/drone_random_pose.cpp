@@ -74,7 +74,7 @@ void DroneRandomPose::leaveParamNote(void)
 		<< "_xy_range" << ": " << _xy_range << std::endl
 		<< "_z_min" << ": " << _z_min << std::endl
 		<< "_z_max" << ": " << _z_max << std::endl
-		<< "_rp_range" << ": " << _rp_range << std::endl;
+		<< "_rp_range" << ": " << _rp_range/M_PI*180.0 << std::endl;
 	/*close*/
 	_txtfile.close();
 }
