@@ -190,7 +190,7 @@ void DroneRandomPose::randomPose(void)
 			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
 bool DroneRandomPose::saveData(void)
