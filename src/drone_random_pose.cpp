@@ -213,7 +213,7 @@ bool DroneRandomPose::saveData(void)
 		if(ifs.is_open()){
 			std::cout << _save_csv_path << " already exists" << std::endl;
 			exit(1);
-			return;
+			return false;
 		}
 		/*std::vector -> cv::mat*/
 		cv::Mat img_cv = cv::Mat(list_response[i].height, list_response[i].width, CV_8UC3);
@@ -240,6 +240,8 @@ bool DroneRandomPose::saveData(void)
 		_csvfile << list_img_name[i];
 	}
 	_csvfile << std::endl;
+
+	return true;
 }
 
 void DroneRandomPose::updateState(void)
