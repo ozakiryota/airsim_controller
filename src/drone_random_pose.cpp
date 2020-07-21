@@ -16,14 +16,22 @@ class DroneRandomPose{
 		/*csv*/
 		std::ofstream _csvfile;
 		/*parameter*/
-		bool _randomize_whether = true;
-		bool _save_data = true;
-		int _num_sampling = 100;
-		std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
-		std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
+		const bool _save_data = true;
+		const bool _randomize_whether = true;
+		const int _num_sampling = 100;
+		const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
+		const std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
+		const float _xy_range = 200.0;
+		const float _z_min = -3.0;
+		const float _z_max = -2.0;
+		const float _rp_range = M_PI/6.0;
+		std::string _str_parameter;
+		/*txt*/
+		std::ofstream _txtfile;
 
 	public:
 		DroneRandomPose();
+		void leaveParamNote(void);
 		void clientInitialization(void);
 		void csvInitialization(void);
 		void startSampling(void);
@@ -37,6 +45,8 @@ class DroneRandomPose{
 DroneRandomPose::DroneRandomPose()
 {
 	std::cout << "----- drone_random_pose -----" << std::endl;
+	/*parameter*/
+	leaveParamNote();
 	/*client*/
 	clientInitialization();
 	/*camera list*/
@@ -45,6 +55,32 @@ DroneRandomPose::DroneRandomPose()
 	};
 	/*csv*/
 	if(_save_data)	csvInitialization();
+}
+
+void DroneRandomPose::leaveParamNote(void)
+{
+	/* const bool _randomize_whether = true; */
+	/* const int _num_sampling = 100; */
+	/* const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp"; */
+	/* const std::string _save_csv_path = _save_root_path + "/imu_camera.csv"; */
+	/* const float _xy_range = 200.0; */
+	/* const float _z_min = -3.0; */
+	/* const float _z_max = -2.0; */
+	/* const float _rp_range = M_PI/6.0; */
+	/* std::string _str_parameter; */
+
+	/*open*/
+	const std::string _save_txt_path = _save_root_path + "/parap_note.txt";
+	_txtfile.open(_save_txt_path, std::ios::out);
+	if(!_txtfile){
+		std::cout << "Cannot open " << _save_txt_path << std::endl;
+		exit(1);
+	}
+	/*write*/
+	_txtfile
+		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl;
+	/*close*/
+	_txtfile.close();
 }
 
 void DroneRandomPose::clientInitialization(void)
@@ -125,17 +161,12 @@ void DroneRandomPose::randomWeather(void)
 
 void DroneRandomPose::randomPose(void)
 {
-	/*parameter*/
-	const float xy_range = 200.0;
-	const float z_min = -3.0;
-	const float z_max = -2.0;
-	const float rp_range = M_PI/6.0;
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd_xy(-xy_range, xy_range);
-	std::uniform_real_distribution<> urd_z(z_min, z_max);
-	std::uniform_real_distribution<> urd_rp(-rp_range, rp_range);
+	std::uniform_real_distribution<> urd_xy(-_xy_range, _xy_range);
+	std::uniform_real_distribution<> urd_z(_z_min, _z_max);
+	std::uniform_real_distribution<> urd_rp(-_rp_range, _rp_range);
 	std::uniform_real_distribution<> urd_y(-M_PI, M_PI);
 	/*set pose*/
 	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt));
