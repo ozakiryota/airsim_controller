@@ -17,15 +17,14 @@ class DroneRandomPose{
 		std::ofstream _csvfile;
 		/*parameter*/
 		const bool _save_data = true;
-		const bool _randomize_whether = true;
 		const int _num_sampling = 100;
+		const bool _randomize_whether = true;
 		const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
 		const std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
 		const float _xy_range = 200.0;
 		const float _z_min = -3.0;
 		const float _z_max = -2.0;
 		const float _rp_range = M_PI/6.0;
-		std::string _str_parameter;
 		/*txt*/
 		std::ofstream _txtfile;
 
@@ -59,26 +58,23 @@ DroneRandomPose::DroneRandomPose()
 
 void DroneRandomPose::leaveParamNote(void)
 {
-	/* const bool _randomize_whether = true; */
-	/* const int _num_sampling = 100; */
-	/* const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp"; */
-	/* const std::string _save_csv_path = _save_root_path + "/imu_camera.csv"; */
-	/* const float _xy_range = 200.0; */
-	/* const float _z_min = -3.0; */
-	/* const float _z_max = -2.0; */
-	/* const float _rp_range = M_PI/6.0; */
-	/* std::string _str_parameter; */
-
 	/*open*/
 	const std::string _save_txt_path = _save_root_path + "/parap_note.txt";
-	_txtfile.open(_save_txt_path, std::ios::out);
+	// _txtfile.open(_save_txt_path, std::ios::out);
+	_txtfile.open(_save_txt_path, std::ios::app);
 	if(!_txtfile){
 		std::cout << "Cannot open " << _save_txt_path << std::endl;
 		exit(1);
 	}
 	/*write*/
 	_txtfile
-		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl;
+		<< "----------"
+		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl
+		<< "_num_sampling" << ": " << _num_sampling << std::endl
+		<< "_xy_range" << ": " << _xy_range << std::endl
+		<< "_z_min" << ": " << _z_min << std::endl
+		<< "_z_max" << ": " << _z_max << std::endl
+		<< "_rp_range" << ": " << _rp_range << std::endl;
 	/*close*/
 	_txtfile.close();
 }
