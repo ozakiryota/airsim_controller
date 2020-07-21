@@ -68,7 +68,7 @@ void DroneRandomPose::leaveParamNote(void)
 	}
 	/*write*/
 	_txtfile
-		<< "----------"
+		<< "----------" << std::endl
 		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl
 		<< "_num_sampling" << ": " << _num_sampling << std::endl
 		<< "_xy_range" << ": " << _xy_range << std::endl

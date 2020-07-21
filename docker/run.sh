@@ -10,5 +10,4 @@ nvidia-docker run -it --rm \
 	--volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
 	--net=host \
 	-v $root_path/../save:/home/airsim_ws/$image_name/save \
-	-v $root_path/../src:/home/airsim_ws/$image_name/src \
 	$image_name:nvidia_docker1
