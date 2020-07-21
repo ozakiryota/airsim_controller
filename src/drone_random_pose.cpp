@@ -207,12 +207,10 @@ bool DroneRandomPose::saveData(void)
 	for(size_t i=0; i<list_response.size(); ++i){
 		list_img_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
-		save_path = _save_root_path + "/" + "test.jpg";
 		/*check*/
 		std::ifstream ifs(save_path);
 		if(ifs.is_open()){
-			std::cout << _save_csv_path << " already exists" << std::endl;
-			exit(1);
+			std::cout << save_path << " already exists" << std::endl;
 			return false;
 		}
 		/*std::vector -> cv::mat*/
