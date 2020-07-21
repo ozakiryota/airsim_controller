@@ -36,7 +36,7 @@ class DroneRandomPose{
 		void startSampling(void);
 		void randomWeather(void);
 		void randomPose(void);
-		void saveData(void);
+		bool saveData(void);
 		void updateState(void);
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
@@ -127,13 +127,15 @@ void DroneRandomPose::startSampling(void)
 {
 	std::cout << "Start sampling" << std::endl;
 
-	for(int i=0; i<_num_sampling; ++i){
+	for(int i=0; i<_num_sampling;){
 		std::cout << "--- sample " << i << " ---" << std::endl;
 		if(_randomize_whether)	randomWeather();
 		randomPose();
 		_client.simPause(true);
 		updateState();
-		if(_save_data)	saveData();
+		if(_save_data){
+			if(saveData())	++i;
+		}
 		_client.simPause(false);
 	}
 	_csvfile.close();
@@ -191,7 +193,7 @@ void DroneRandomPose::randomPose(void)
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
-void DroneRandomPose::saveData(void)
+bool DroneRandomPose::saveData(void)
 {
 	/*list*/
 	std::vector<std::string> list_img_name(_list_camera.size());
@@ -205,6 +207,14 @@ void DroneRandomPose::saveData(void)
 	for(size_t i=0; i<list_response.size(); ++i){
 		list_img_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
+		save_path = _save_root_path + "/" + "test.jpg";
+		/*check*/
+		std::ifstream ifs(save_path);
+		if(ifs.is_open()){
+			std::cout << _save_csv_path << " already exists" << std::endl;
+			exit(1);
+			return;
+		}
 		/*std::vector -> cv::mat*/
 		cv::Mat img_cv = cv::Mat(list_response[i].height, list_response[i].width, CV_8UC3);
 		for(int row=0; row<list_response[i].height; ++row){
