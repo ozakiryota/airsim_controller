@@ -59,7 +59,7 @@ DroneRandomPose::DroneRandomPose()
 void DroneRandomPose::leaveParamNote(void)
 {
 	/*open*/
-	const std::string _save_txt_path = _save_root_path + "/parap_note.txt";
+	const std::string _save_txt_path = _save_root_path + "/param_note.txt";
 	// _txtfile.open(_save_txt_path, std::ios::out);
 	_txtfile.open(_save_txt_path, std::ios::app);
 	if(!_txtfile){
