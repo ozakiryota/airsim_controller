@@ -232,7 +232,7 @@ bool DroneRandomPose::saveData(void)
 	/*imu with other*/
 	_csvfile 
 		<< _imu.linear_acceleration.x() << "," 
-		<< _imu.linear_acceleration.y() << "," 
+		<< -_imu.linear_acceleration.y() << "," 
 		<< -_imu.linear_acceleration.z() << ",";
 	for(size_t i=0; i<list_img_name.size(); ++i){
 		_csvfile << list_img_name[i];
