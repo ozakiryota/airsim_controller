@@ -136,6 +136,7 @@ void DroneRandomPose::startSampling(void)
 		if(_save_data){
 			if(saveData())	++i;
 		}
+		else	++i;
 		_client.simPause(false);
 	}
 	_csvfile.close();
