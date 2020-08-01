@@ -23,7 +23,7 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoint(void)
 {
-	const double height = height;
+	const double height = -3.0;
 	_path = {
 		Eigen::Vector3f(128.0, 0.0, height),
 		Eigen::Vector3f(128.0, 128.0, height),
