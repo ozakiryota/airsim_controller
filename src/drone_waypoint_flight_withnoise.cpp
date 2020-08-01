@@ -114,21 +114,14 @@ void DroneWayPointFlight::startFlight(void)
 	yaw_mode.is_rate = false;
 	yaw_mode.yaw_or_rate = 0.0;
 
-	/* _client.moveOnPathAsync( */
-	/* 	_path, */
-	/* 	_velocity, */
-	/* 	Utils::max<float>(), */
-	/* 	DrivetrainType::ForwardOnly, */
-	/* 	yaw_mode */
-	/* )->waitOnLastTask(); */
 	_client.moveOnPathAsync(
 		_path,
 		_velocity,
 		Utils::max<float>(),
 		DrivetrainType::ForwardOnly,
-		yaw_mode,
-		-1,
-		0
+		yaw_mode
+		//-1,
+		//0
 	)->waitOnLastTask();
 
 	std::cout << "Go home" << std::endl;
