@@ -31,7 +31,6 @@ void DroneRandomFlight::clientInitialization(void)
 	_client.enableApiControl(true);
 	std::cout << "Arm the drone" << std::endl;
 	_client.armDisarm(true);
-	printState();
 	std::cout << "Take off" << std::endl;
 	_client.takeoffAsync()->waitOnLastTask();
 }
