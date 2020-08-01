@@ -41,3 +41,6 @@ target_link_libraries(drone_random_flight_updown AirLib rpc)
 #
 add_executable(drone_waypoint_flight src/drone_waypoint_flight.cpp)
 target_link_libraries(drone_waypoint_flight AirLib rpc)
+#
+add_executable(drone_waypoint_flight_withnoise src/drone_waypoint_flight_withnoise.cpp)
+target_link_libraries(drone_waypoint_flight_withnoise AirLib rpc)
