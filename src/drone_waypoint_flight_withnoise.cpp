@@ -126,6 +126,8 @@ void DroneWayPointFlight::startFlight(void)
 
 	std::cout << "Go home" << std::endl;
 	_client.goHomeAsync()->waitOnLastTask();
+	//std::cout << "Land" << std::endl;
+	//_client.landAsync()->waitOnLastTask();
 }
 
 int main(void) 
