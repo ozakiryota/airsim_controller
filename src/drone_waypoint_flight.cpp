@@ -1,25 +1,44 @@
 #include <iostream>
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-class DroneRandomFlight{
+class DroneWayPointFlight{
 	private:
 		msr::airlib::MultirotorRpcLibClient _client;
+		std::vector<Eigen::Vector3f> _path;
 
 	public:
-		DroneRandomFlight();
+		DroneWayPointFlight();
+		void setWayPoint(void);
 		void clientInitialization(void);
-		void updateState(void);
+		void startFlight(void);
 };
 
-DroneRandomFlight::DroneRandomFlight()
+DroneWayPointFlight::DroneWayPointFlight()
 {
 	std::cout << "----- drone_waypoint_flight -----" << std::endl;
 	/*initialize*/
+	setWayPoint();
 	clientInitialization();
-	updateState();
 }
 
-void DroneRandomFlight::clientInitialization(void)
+void DroneWayPointFlight::setWayPoint(void)
+{
+	const double height = height;
+	_path = {
+		Eigen::Vector3f(128.0, 0.0, height),
+		Eigen::Vector3f(128.0, 128.0, height),
+		Eigen::Vector3f(0.0, 128.0, height),
+		Eigen::Vector3f(-128.0, 128.0, height),
+		Eigen::Vector3f(-128.0, 0.0, height),
+		Eigen::Vector3f(-128.0, -128.0, height),
+		Eigen::Vector3f(0.0, -128.0, height),
+		Eigen::Vector3f(128.0, -128.0, height),
+		Eigen::Vector3f(0.0, -128.0, height),
+		Eigen::Vector3f(0.0, 0.0, height)
+	};
+}
+
+void DroneWayPointFlight::clientInitialization(void)
 {
 	/*connect*/
 	_client.confirmConnection();
@@ -35,25 +54,26 @@ void DroneRandomFlight::clientInitialization(void)
 	_client.takeoffAsync()->waitOnLastTask();
 }
 
-void DroneRandomFlight::updateState(void)
+void DroneWayPointFlight::startFlight(void)
 {
-	msr::airlib::MultirotorState state = _client.getMultirotorState();
-	std::cout << "Position: "	//Eigen::Matrix<float, 3, 1>
-		<< state.kinematics_estimated.pose.position.x() << ", "
-		<< state.kinematics_estimated.pose.position.y() << ", "
-		<< state.kinematics_estimated.pose.position.z() << std::endl;
-	std::cout << "Orientation: "	//Eigen::Quaternionf
-		<< state.kinematics_estimated.pose.orientation.w() << ", "
-		<< state.kinematics_estimated.pose.orientation.x() << ", "
-		<< state.kinematics_estimated.pose.orientation.y() << ", "
-		<< state.kinematics_estimated.pose.orientation.z() << std::endl;
-	std::cout << "state.collision.has_collided = " << (bool)state.collision.has_collided << std::endl;
+	std::cout << "startFlight" << std::endl;
+	const double vel = 5.0;
+	YawMode yaw_mode;
+	yaw_mode.is_rate = false;
+	yaw_mode.yaw_or_rate = 0;
+	_client.moveOnPathAsync(
+		_path,
+		vel,
+		Utils::max<float>(),
+		DrivetrainType::ForwardOnly,
+		yaw_mode
+	)->waitOnLastTask();
 }
 
 int main(void) 
 {
-	DroneRandomFlight drone_random_flight;
-	// drone_random_flight.startSampling();
+	DroneWayPointFlight drone_waypoint_flight;
+	drone_waypoint_flight.startFlight();
 
 	return 0;
 }
