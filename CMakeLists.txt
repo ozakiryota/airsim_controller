@@ -30,8 +30,14 @@ include_directories(
 add_executable(hello_drone src/hello_drone.cpp)
 target_link_libraries(hello_drone AirLib rpc)
 #
+add_executable(drone_random_pose src/drone_random_pose.cpp)
+target_link_libraries(drone_random_pose AirLib rpc ${OpenCV_LIBRARIES})
+#
 add_executable(drone_random_flight src/drone_random_flight.cpp)
 target_link_libraries(drone_random_flight AirLib rpc)
 #
-add_executable(drone_random_pose src/drone_random_pose.cpp)
-target_link_libraries(drone_random_pose AirLib rpc ${OpenCV_LIBRARIES})
+add_executable(drone_random_flight_updown src/drone_random_flight_updown.cpp)
+target_link_libraries(drone_random_flight_updown AirLib rpc)
+#
+add_executable(drone_waypoint_flight src/drone_waypoint_flight.cpp)
+target_link_libraries(drone_waypoint_flight AirLib rpc)

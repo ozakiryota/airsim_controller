@@ -12,13 +12,13 @@ RUN apt-get update && apt-get install -y \
 	git \
 	build-essential
 ########## AirSim ##########
-RUN apt-get update &&\
-	apt-get install -y \
-		rsync \
-		g++-8 \
-		python-catkin-tools \
-		ros-kinetic-mavros* &&\
-	mkdir /home/airsim_ws &&\
+# RUN apt-get update &&\
+# 	apt-get install -y \
+# 		rsync \
+# 		g++-8 \
+# 		python-catkin-tools \
+# 		ros-kinetic-mavros* &&\
+RUN mkdir /home/airsim_ws &&\
 	cd /home/airsim_ws &&\
 	git clone https://github.com/Microsoft/AirSim.git &&\
 	cd AirSim &&\
