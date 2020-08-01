@@ -34,7 +34,6 @@ void DroneRandomFlight::clientInitialization(void)
 	printState();
 	std::cout << "Take off" << std::endl;
 	_client.takeoffAsync()->waitOnLastTask();
-	printState();
 }
 
 void DroneRandomFlight::updateState(void)
