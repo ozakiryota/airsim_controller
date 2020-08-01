@@ -6,16 +6,17 @@ class DroneWayPointFlight{
 		msr::airlib::MultirotorRpcLibClient _client;
 		std::vector<Eigen::Vector3f> _waypoints;
 		std::vector<Eigen::Vector3f> _path;
-		double _height = -3.0;
+		double _height = -2.5;
 		double _path_resolution = 4.0;
-		double _noise = 1.0;
+		double _noise_xy = 2.0;
+		double _noise_z = 0.5;
 		double _velocity = 15.0;
 
 	public:
 		DroneWayPointFlight();
 		void setWayPoints(void);
 		void devidePath(void);
-		void addNoise(void);
+		void addNoise(Eigen::Vector3f& point);
 		void printPath(void);
 		void clientInitialization(void);
 		void startFlight(void);
@@ -27,7 +28,7 @@ DroneWayPointFlight::DroneWayPointFlight()
 	/*initialize*/
 	setWayPoints();
 	devidePath();
-	addNoise();
+	// addNoise();
 	printPath();
 	clientInitialization();
 }
@@ -58,22 +59,23 @@ void DroneWayPointFlight::devidePath(void)
 		Eigen::Vector3f step = delta/(double)points_per_line;
 		for(size_t j=1; j<points_per_line; ++j){
 			Eigen::Vector3f point = _waypoints[i] + j*step;
+			addNoise(point);
 			_path.push_back(point);
 		}
 		_path.push_back(_waypoints[i+1]);
 	}
 }
 
-void DroneWayPointFlight::addNoise(void)
+void DroneWayPointFlight::addNoise(Eigen::Vector3f& point)
 {
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd(-_noise, _noise);
-	for(size_t i=0; i<_path.size(); ++i){
-		_path[i](0) += urd(mt);
-		_path[i](1) += urd(mt);
-		_path[i](2) += urd(mt);
-	}
+	std::uniform_real_distribution<> urd_xy(-_noise_xy, _noise_xy);
+	std::uniform_real_distribution<> urd_z(-_noise_z, _noise_z);
+
+	point(0) += urd_xy(mt);
+	point(1) += urd_xy(mt);
+	point(2) += urd_z(mt);
 }
 
 void DroneWayPointFlight::printPath(void)
