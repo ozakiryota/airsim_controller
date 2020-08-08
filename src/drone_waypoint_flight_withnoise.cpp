@@ -8,7 +8,7 @@ class DroneWayPointFlight{
 		std::vector<Eigen::Vector3f> _path;
 		double _height = -2.5;
 		double _path_resolution = 4.0;
-		double _noise_xy = 2.0;
+		double _noise_xy = 2.5;
 		double _noise_z = 0.5;
 		double _velocity = 15.0;
 
@@ -35,7 +35,7 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoints(void)
 {
-	double side_length = 127.0;
+	double side_length = 128.0;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
 		Eigen::Vector3f(side_length, 0.0, _height),
