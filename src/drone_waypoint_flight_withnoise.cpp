@@ -11,6 +11,7 @@ class DroneWayPointFlight{
 		double _noise_xy = 2.5;
 		double _noise_z = 0.5;
 		double _velocity = 15.0;
+		double _cutting_corner_ration = 0.5;
 
 	public:
 		DroneWayPointFlight();
@@ -63,7 +64,7 @@ void DroneWayPointFlight::devidePath(void)
 			addNoise(point);
 			_path.push_back(point);
 		}
-		_path.push_back(_waypoints[i+1]);
+		_path.push_back(_waypoints[i+1] - _cutting_corner_ration*step);
 	}
 }
 
@@ -111,16 +112,12 @@ void DroneWayPointFlight::startFlight(void)
 {
 	std::cout << "startFlight" << std::endl;
 
-	YawMode yaw_mode;
-	yaw_mode.is_rate = false;
-	yaw_mode.yaw_or_rate = 0.0;
-
 	_client.moveOnPathAsync(
 		_path,
 		_velocity,
 		Utils::max<float>(),
 		DrivetrainType::ForwardOnly,
-		yaw_mode
+		YawMode(false, 0.0)
 		//-1,
 		//0
 	)->waitOnLastTask();
