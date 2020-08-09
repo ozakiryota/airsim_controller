@@ -36,6 +36,7 @@ DroneWayPointFlight::DroneWayPointFlight()
 void DroneWayPointFlight::setWayPoints(void)
 {
 	double side_length = 128.0;
+	double cutting_corner = 5.0;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
 		Eigen::Vector3f(side_length, 0.0, _height),
@@ -46,7 +47,7 @@ void DroneWayPointFlight::setWayPoints(void)
 		Eigen::Vector3f(-side_length, -side_length, _height),
 		Eigen::Vector3f(0.0, -side_length, _height),
 		Eigen::Vector3f(side_length, -side_length, _height),
-		Eigen::Vector3f(side_length, 0.0, _height),
+		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height),
 		Eigen::Vector3f(0.0, 0.0, _height)
 	};
 }
