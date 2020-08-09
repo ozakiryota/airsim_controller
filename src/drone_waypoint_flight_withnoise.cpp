@@ -7,11 +7,10 @@ class DroneWayPointFlight{
 		std::vector<Eigen::Vector3f> _waypoints;
 		std::vector<Eigen::Vector3f> _path;
 		double _height = -2.5;
-		double _path_resolution = 4.0;
+		double _path_resolution = 2.5;
 		double _noise_xy = 2.5;
 		double _noise_z = 0.5;
-		double _velocity = 15.0;
-		double _cutting_corner_ration = 0.5;
+		double _velocity = 14.0;
 
 	public:
 		DroneWayPointFlight();
@@ -57,14 +56,15 @@ void DroneWayPointFlight::devidePath(void)
 	for(size_t i=0; i<_waypoints.size()-1; ++i){
 		Eigen::Vector3f delta = _waypoints[i+1] - _waypoints[i];
 		int points_per_line = int(delta.norm()/_path_resolution);
-		if(!(points_per_line > 0))	continue;
-		Eigen::Vector3f step = delta/(double)points_per_line;
-		for(size_t j=1; j<points_per_line; ++j){
-			Eigen::Vector3f point = _waypoints[i] + j*step;
-			addNoise(point);
-			_path.push_back(point);
+		if(points_per_line > 0){
+			Eigen::Vector3f step = delta/(double)points_per_line;
+			for(size_t j=1; j<points_per_line; ++j){
+				Eigen::Vector3f point = _waypoints[i] + j*step;
+				addNoise(point);
+				_path.push_back(point);
+			}
 		}
-		_path.push_back(_waypoints[i+1] - _cutting_corner_ration*step);
+		_path.push_back(_waypoints[i+1]);
 	}
 }
 
