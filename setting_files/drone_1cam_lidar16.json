@@ -26,7 +26,7 @@
           "NumberOfChannels": 16,
 		  "VerticalFOVUpper": 15,
 		  "VerticalFOVLower": -15,
-          "PointsPerSecond": 300000,
+          "PointsPerSecond": 349440,
 		  "RotationsPerSecond": 20,
           "X": 0,
           "Y": 0,
