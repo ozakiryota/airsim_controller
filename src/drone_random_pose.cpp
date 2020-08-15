@@ -21,7 +21,8 @@ class DroneRandomPose{
 		const bool _randomize_whether = true;
 		const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
 		const std::string _save_csv_path = _save_root_path + "/imu_camera.csv";
-		const float _xy_range = 200.0;
+		const float _x_range = 200.0;	//Neighborhood: 200, SoccerField: 350
+		const float _y_range = 200.0;	//Neighborhood: 200, SoccerField: 300
 		const float _z_min = -3.0;
 		const float _z_max = -2.0;
 		const float _rp_range = M_PI/6.0;
@@ -71,7 +72,8 @@ void DroneRandomPose::leaveParamNote(void)
 		<< "----------" << std::endl
 		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl
 		<< "_num_sampling" << ": " << _num_sampling << std::endl
-		<< "_xy_range" << ": " << _xy_range << std::endl
+		<< "_x_range" << ": " << _x_range << std::endl
+		<< "_y_range" << ": " << _y_range << std::endl
 		<< "_z_min" << ": " << _z_min << std::endl
 		<< "_z_max" << ": " << _z_max << std::endl
 		<< "_rp_range" << ": " << _rp_range/M_PI*180.0 << std::endl;
@@ -163,12 +165,13 @@ void DroneRandomPose::randomPose(void)
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd_xy(-_xy_range, _xy_range);
+	std::uniform_real_distribution<> urd_x(-_x_range, _x_range);
+	std::uniform_real_distribution<> urd_y(-_y_range, _y_range);
 	std::uniform_real_distribution<> urd_z(_z_min, _z_max);
 	std::uniform_real_distribution<> urd_rp(-_rp_range, _rp_range);
 	std::uniform_real_distribution<> urd_y(-M_PI, M_PI);
 	/*set pose*/
-	Eigen::Vector3f position(urd_xy(mt), urd_xy(mt), urd_z(mt));
+	Eigen::Vector3f position(urd_x(mt), urd_y(mt), urd_z(mt));
 	float roll = urd_rp(mt);
 	float pitch = urd_rp(mt);
 	float yaw = urd_y(mt);
