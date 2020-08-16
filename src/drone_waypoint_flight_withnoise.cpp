@@ -35,7 +35,7 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoints(void)
 {
-	const double side_length = 128.0;
+	const double side_length = 127.5;
 	const double cutting_corner = 5.0;
 	const int loop = 1;
 	_waypoints = {
