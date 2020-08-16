@@ -35,8 +35,22 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoints(void)
 {
-	double side_length = 128.0;
-	double cutting_corner = 5.0;
+	const double side_length = 128.0;
+	const double cutting_corner = 5.0;
+	const int loop = 1;
+	_waypoints = {
+		Eigen::Vector3f(0.0, 0.0, _height),
+		Eigen::Vector3f(side_length, 0.0, _height)
+	};
+	for(int i=0; i<loop; ++i){
+		_waypoints.push_back(Eigen::Vector3f(side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, -side_length, _height));
+	}
+	_waypoints.push_back(Eigen::Vector3f(side_length - cutting_corner, -cutting_corner, _height));
+	_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
+	/*
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
 		Eigen::Vector3f(side_length, 0.0, _height),
@@ -50,6 +64,7 @@ void DroneWayPointFlight::setWayPoints(void)
 		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height),
 		Eigen::Vector3f(0.0, 0.0, _height)
 	};
+	*/
 }
 
 void DroneWayPointFlight::devidePath(void)
