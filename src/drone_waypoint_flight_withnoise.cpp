@@ -43,10 +43,10 @@ void DroneWayPointFlight::setWayPoints(void)
 		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height)
 	};
 	for(int i=0; i<loop; ++i){
-		_waypoints.push_back(Eigen::Vector3f(side_length, side_length, _height));
-		_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
-		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length, _height));
-		_waypoints.push_back(Eigen::Vector3f(side_length, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, side_length - cutting_corner, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length + cutting_corner, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length + cutting_corner, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length - cutting_corner, -side_length, _height));
 	}
 	_waypoints.push_back(Eigen::Vector3f(side_length, -cutting_corner, _height));
 	_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
