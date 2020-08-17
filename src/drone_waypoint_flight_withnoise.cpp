@@ -11,6 +11,7 @@ class DroneWayPointFlight{
 		double _noise_xy = 2.5;
 		double _noise_z = 0.5;
 		double _velocity = 15.0;
+		double _cutting_corner = 5.0;
 
 	public:
 		DroneWayPointFlight();
@@ -36,19 +37,18 @@ DroneWayPointFlight::DroneWayPointFlight()
 void DroneWayPointFlight::setWayPoints(void)
 {
 	const double side_length = 127.5;
-	const double cutting_corner = 5.0;
 	const int loop = 1;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
-		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height)
+		Eigen::Vector3f(side_length, 0.0, _height)
 	};
 	for(int i=0; i<loop; ++i){
-		_waypoints.push_back(Eigen::Vector3f(side_length, side_length - cutting_corner, _height));
-		_waypoints.push_back(Eigen::Vector3f(-side_length + cutting_corner, side_length, _height));
-		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length + cutting_corner, _height));
-		_waypoints.push_back(Eigen::Vector3f(side_length - cutting_corner, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, -side_length, _height));
 	}
-	_waypoints.push_back(Eigen::Vector3f(side_length, -cutting_corner, _height));
+	_waypoints.push_back(Eigen::Vector3f(side_length, 0.0, _height));
 	_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
 	/*
 	_waypoints = {
@@ -61,7 +61,7 @@ void DroneWayPointFlight::setWayPoints(void)
 		Eigen::Vector3f(-side_length, -side_length, _height),
 		Eigen::Vector3f(0.0, -side_length, _height),
 		Eigen::Vector3f(side_length, -side_length, _height),
-		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height),
+		Eigen::Vector3f(side_length, 0.0, _height),
 		Eigen::Vector3f(0.0, 0.0, _height)
 	};
 	*/
@@ -81,6 +81,7 @@ void DroneWayPointFlight::devidePath(void)
 			}
 		}
 		_path.push_back(_waypoints[i+1]);
+		_path[_path.size()-1] -= (_waypoints[i+1] - _waypoints[i]).normalized()*_cutting_corner;
 	}
 }
 
