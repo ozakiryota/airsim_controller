@@ -10,7 +10,7 @@ class DroneWayPointFlight{
 		double _path_resolution = 2.5;
 		double _noise_xy = 2.5;
 		double _noise_z = 0.5;
-		double _velocity = 14.0;
+		double _velocity = 15.0;
 
 	public:
 		DroneWayPointFlight();
@@ -40,7 +40,7 @@ void DroneWayPointFlight::setWayPoints(void)
 	const int loop = 1;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
-		Eigen::Vector3f(side_length, 0.0, _height)
+		Eigen::Vector3f(side_length - cutting_corner, 0.0, _height)
 	};
 	for(int i=0; i<loop; ++i){
 		_waypoints.push_back(Eigen::Vector3f(side_length, side_length, _height));
@@ -48,7 +48,7 @@ void DroneWayPointFlight::setWayPoints(void)
 		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length, _height));
 		_waypoints.push_back(Eigen::Vector3f(side_length, -side_length, _height));
 	}
-	_waypoints.push_back(Eigen::Vector3f(side_length - cutting_corner, -cutting_corner, _height));
+	_waypoints.push_back(Eigen::Vector3f(side_length, -cutting_corner, _height));
 	_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
 	/*
 	_waypoints = {
