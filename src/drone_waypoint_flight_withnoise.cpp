@@ -85,7 +85,8 @@ void DroneWayPointFlight::devidePath(void)
 			for(size_t j=1; j<points_per_line; ++j){
 				Eigen::Vector3f point = _waypoints[i] + j*step;
 				addNoise(point);
-				_path.push_back(point);
+				double dist_to_next = (_waypoints[i+1] - point).norm();
+				if(dist_to_next > _cutting_corner)	_path.push_back(point);
 			}
 		}
 		_path.push_back(_waypoints[i+1]);
