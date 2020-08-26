@@ -36,8 +36,9 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoints(void)
 {
-	const double side_length = 127.5;
 	const int loop = 1;
+	/*Neighborhood course 1*/
+	const double side_length = 127.5;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
 		Eigen::Vector3f(side_length, 0.0, _height)
@@ -50,20 +51,27 @@ void DroneWayPointFlight::setWayPoints(void)
 	}
 	_waypoints.push_back(Eigen::Vector3f(side_length, 0.0, _height));
 	_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
+	/*Neighborhood course 2*/
 	/*
+	const double middle_point = 77.0;
 	_waypoints = {
 		Eigen::Vector3f(0.0, 0.0, _height),
-		Eigen::Vector3f(side_length, 0.0, _height),
-		Eigen::Vector3f(side_length, side_length, _height),
-		Eigen::Vector3f(0.0, side_length, _height),
-		Eigen::Vector3f(-side_length, side_length, _height),
-		Eigen::Vector3f(-side_length, 0.0, _height),
-		Eigen::Vector3f(-side_length, -side_length, _height),
-		Eigen::Vector3f(0.0, -side_length, _height),
-		Eigen::Vector3f(side_length, -side_length, _height),
-		Eigen::Vector3f(side_length, 0.0, _height),
-		Eigen::Vector3f(0.0, 0.0, _height)
 	};
+	for(int i=0; i<loop; ++i){
+		_waypoints.push_back(Eigen::Vector3f(side_length, 0.0, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(side_length, 0.0, _height));
+		_waypoints.push_back(Eigen::Vector3f(middle_point, 0.0, _height));
+		_waypoints.push_back(Eigen::Vector3f(middle_point, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(0.0, -side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(0.0, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
+		_waypoints.push_back(Eigen::Vector3f(-side_length, 0.0, _height));
+		_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
+	}
 	*/
 }
 

@@ -3,7 +3,7 @@
   "SettingsVersion": 1.2,
   "SimMode": "Car",
   "Vehicles": {
-    "car": {
+    "car0": {
 		"VehicleType": "PhysXCar",
 		"EnableCollisions": false
 	}
