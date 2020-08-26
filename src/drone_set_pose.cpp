@@ -36,13 +36,6 @@ DroneRandomPose::DroneRandomPose()
 	_list_camera = {
 		"camera_0"
 	};
-	/*txt*/
-	const std::string save_txt_path = _save_root_path + "/param_note.txt";
-	_txtfile.open(save_txt_path, std::ios::out);
-	if(!_txtfile){
-		std::cout << "Cannot open " << save_txt_path << std::endl;
-		exit(1);
-	}
 }
 
 void DroneRandomPose::clientInitialization(void)
@@ -60,23 +53,32 @@ void DroneRandomPose::clientInitialization(void)
 
 void DroneRandomPose::interaction(void)
 {
-	while(true){
+	bool is_done = false;
+	while(!is_done){
 		/*set pose*/
 		setPose();
 		_client.simPause(true);
 		updateState();
 		/*save*/
-		std::string key_input;
-		std::cout << "Do you want to save the pictures and data? (y or n)" << std::endl;
-		std::cin >> key_input;
-		if(key_input == "y")	saveData();
-		else if(key_input == "n")	std::cout << "Dumped" << std::endl;
+		std::string save_y_or_n;
+		while(save_y_or_n != "y" && save_y_or_n != "n"){
+			std::cout << "Enter: Do you save the pictures and data? (y or n)" << std::endl;
+			std::cin >> save_y_or_n;
+			if(save_y_or_n == "y")	saveData();
+			else if(save_y_or_n == "n")	std::cout << "Dumped" << std::endl;
+			else	std::cout << "Type y or n" << std::endl;
+		}
 		/*repeat*/
-		std::cout << "Do you want to set another pose? (y or n)" << std::endl;
-		if(key_input == "y")	break;
+		std::string continue_y_or_n;
+		while(continue_y_or_n != "y" && continue_y_or_n != "n"){
+			std::cout << "Enter: Do you continue setting another pose? (y or n)" << std::endl;
+			std::cin >> continue_y_or_n;
+			if(continue_y_or_n == "y")	is_done = false;
+			else if(continue_y_or_n == "n")	is_done = true;
+			else	std::cout << "Type y or n" << std::endl;
+		}
+		_client.simPause(false);
 	}
-	/*close*/
-	_txtfile.close();
 }
 
 void DroneRandomPose::setPose(void)
@@ -87,21 +89,21 @@ void DroneRandomPose::setPose(void)
 	float pitch;
 	float yaw;
 	/*Interaction*/
-	std::cout << "Enter: x = ?" << std::endl;
+	std::cout << "Enter: x [m] = ?" << std::endl;
 	std::cin >> position(0);
-	std::cout << "Enter: y = ?" << std::endl;
+	std::cout << "Enter: y [m] = ?" << std::endl;
 	std::cin >> position(1);
-	std::cout << "Enter: z = ?" << std::endl;
+	std::cout << "Enter: z [m] = ?" << std::endl;
 	std::cin >> position(2);
-	std::cout << "Enter: roll = ?" << std::endl;
+	std::cout << "Enter: roll [deg] = ?" << std::endl;
 	std::cin >> roll;
-	std::cout << "Enter: pitch = ?" << std::endl;
+	std::cout << "Enter: pitch [deg] = ?" << std::endl;
 	std::cin >> pitch;
-	std::cout << "Enter: yaw = ?" << std::endl;
+	std::cout << "Enter: yaw [deg] = ?" << std::endl;
 	std::cin >> yaw;
 	/*conversion*/
 	Eigen::Quaternionf orientation;
-	eularToQuat(roll, pitch, yaw, orientation);
+	eularToQuat(roll/180.0*M_PI, pitch/180.0*M_PI, yaw/180.0*M_PI, orientation);
 	/*input*/
 	msr::airlib::Pose goal = msr::airlib::Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
@@ -125,19 +127,19 @@ void DroneRandomPose::setPose(void)
 
 void DroneRandomPose::saveData(void)
 {
-
+	/*list*/
 	std::vector<std::string> list_img_name(_list_camera.size());
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request(_list_camera.size());
-
+	/*image request-responce*/
 	for(size_t i=0; i<_list_camera.size(); ++i){
 		list_request[i] = msr::airlib::ImageCaptureBase::ImageRequest(_list_camera[i], msr::airlib::ImageCaptureBase::ImageType::Scene, false, false);
 	}
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
-
+	/*access each image*/
 	for(size_t i=0; i<list_response.size(); ++i){
 		list_img_name[i] = _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
-
+		/*std::vector -> cv::mat*/
 		cv::Mat img_cv = cv::Mat(list_response[i].height, list_response[i].width, CV_8UC3);
 		for(int row=0; row<list_response[i].height; ++row){
 			for(int col=0; col<list_response[i].width; ++col){
@@ -149,13 +151,31 @@ void DroneRandomPose::saveData(void)
 		std::cout << "Save: " << save_path << std::endl;
 		cv::imwrite(save_path, img_cv);              
 	}
-
-	_txtfile 
+	/*open*/
+	const std::string save_txt_path = _save_root_path + "/param_note.txt";
+	_txtfile.open(save_txt_path, std::ios::out);
+	if(!_txtfile){
+		std::cout << "Cannot open " << save_txt_path << std::endl;
+		exit(1);
+	}
+	/*write*/
+	_txtfile << "Pose: " << std::endl;
+	_txtfile << " Position: "
+		<< _pose.position.x() << ", "
+		<< _pose.position.y() << ", "
+		<< _pose.position.z() << std::endl;
+	_txtfile << " Orientation: "
+		<< _pose.orientation.w() << ", "
+		<< _pose.orientation.x() << ", "
+		<< _pose.orientation.y() << ", "
+		<< _pose.orientation.z() << std::endl;
+	_txtfile << "IMU: " << std::endl;
+	_txtfile << " linear_acceleration: "
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
-		<< -_imu.linear_acceleration.z() << ",";
-	_txtfile << std::endl;
-
+		<< -_imu.linear_acceleration.z() << std::endl;
+	/*close*/
+	_txtfile.close();
 }
 
 void DroneRandomPose::updateState(void)
