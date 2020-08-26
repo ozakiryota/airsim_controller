@@ -125,19 +125,19 @@ void DroneRandomPose::setPose(void)
 
 void DroneRandomPose::saveData(void)
 {
-	/*list*/
+
 	std::vector<std::string> list_img_name(_list_camera.size());
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request(_list_camera.size());
-	/*image request-responce*/
+
 	for(size_t i=0; i<_list_camera.size(); ++i){
 		list_request[i] = msr::airlib::ImageCaptureBase::ImageRequest(_list_camera[i], msr::airlib::ImageCaptureBase::ImageType::Scene, false, false);
 	}
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
-	/*access each image*/
+
 	for(size_t i=0; i<list_response.size(); ++i){
 		list_img_name[i] = _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_img_name[i];
-		/*std::vector -> cv::mat*/
+
 		cv::Mat img_cv = cv::Mat(list_response[i].height, list_response[i].width, CV_8UC3);
 		for(int row=0; row<list_response[i].height; ++row){
 			for(int col=0; col<list_response[i].width; ++col){
@@ -150,24 +150,12 @@ void DroneRandomPose::saveData(void)
 		cv::imwrite(save_path, img_cv);              
 	}
 
-	/*imu with other*/
 	_txtfile 
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
 		<< -_imu.linear_acceleration.z() << ",";
-	/* for(size_t i=0; i<list_img_name.size(); ++i){ */
-	/* 	_txtfile << list_img_name[i]; */
-	/* } */
 	_txtfile << std::endl;
-	/* _txtfile */
-	/* 	<< "----------" << std::endl */
-	/* 	<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl */
-	/* 	<< "_num_sampling" << ": " << _num_sampling << std::endl */
-	/* 	<< "_x_range" << ": " << _x_range << std::endl */
-	/* 	<< "_y_range" << ": " << _y_range << std::endl */
-	/* 	<< "_z_min" << ": " << _z_min << std::endl */
-	/* 	<< "_z_max" << ": " << _z_max << std::endl */
-	/* 	<< "_rp_range" << ": " << _rp_range/M_PI*180.0 << std::endl; */
+
 }
 
 void DroneRandomPose::updateState(void)

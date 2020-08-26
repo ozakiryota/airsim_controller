@@ -45,5 +45,5 @@ target_link_libraries(drone_waypoint_flight AirLib rpc)
 add_executable(drone_waypoint_flight_withnoise src/drone_waypoint_flight_withnoise.cpp)
 target_link_libraries(drone_waypoint_flight_withnoise AirLib rpc)
 #
-# add_executable(drone_set_pose src/drone_set_pose.cpp)
-# target_link_libraries(drone_set_pose AirLib rpc)
+add_executable(drone_set_pose src/drone_set_pose.cpp)
+target_link_libraries(drone_set_pose AirLib rpc ${OpenCV_LIBRARIES})
