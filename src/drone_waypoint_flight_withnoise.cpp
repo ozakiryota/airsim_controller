@@ -39,7 +39,7 @@ void DroneWayPointFlight::setWayPoints(void)
 	const int loop = 1;
 	const int course_number = 0;
 	const double side_length = 127.5;
-	const double middle_point = 77.0;
+	const double middle_point = 79.5;
 	/*Neighborhood course 0*/
 	if(course_number == 0){
 		_waypoints = {
