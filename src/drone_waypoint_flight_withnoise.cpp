@@ -36,8 +36,8 @@ DroneWayPointFlight::DroneWayPointFlight()
 
 void DroneWayPointFlight::setWayPoints(void)
 {
-	const int loop = 1;
 	const int course_number = 0;
+	const int loop = 1;
 	const double side_length = 127.5;
 	const double middle_point = 79.0;
 	/*Neighborhood course 0*/
@@ -74,6 +74,27 @@ void DroneWayPointFlight::setWayPoints(void)
 			_waypoints.push_back(Eigen::Vector3f(-side_length, side_length, _height));
 			_waypoints.push_back(Eigen::Vector3f(-side_length, 0.0, _height));
 			_waypoints.push_back(Eigen::Vector3f(0.0, 0.0, _height));
+		}
+	}
+	/*SoccerField course 2*/
+	else if(course_number == 2){
+		_waypoints = {
+			Eigen::Vector3f(0.0, 0.0, _height)
+		};
+		for(int i=0; i<loop; ++i){
+			_waypoints.push_back(Eigen::Vector3f(0, 0, _height));
+			_waypoints.push_back(Eigen::Vector3f(-158, 130, _height));
+			_waypoints.push_back(Eigen::Vector3f(-158, -43, _height));
+			_waypoints.push_back(Eigen::Vector3f(-14, -44, _height));
+			_waypoints.push_back(Eigen::Vector3f(72, -65, _height));
+			_waypoints.push_back(Eigen::Vector3f(127, -28, _height));
+			_waypoints.push_back(Eigen::Vector3f(225, -26, _height));
+			_waypoints.push_back(Eigen::Vector3f(230, 7, _height));
+			_waypoints.push_back(Eigen::Vector3f(160, 16, _height));
+			_waypoints.push_back(Eigen::Vector3f(127, 61, _height));
+			_waypoints.push_back(Eigen::Vector3f(-32, 63, _height));
+			_waypoints.push_back(Eigen::Vector3f(-64, 91, _height));
+			_waypoints.push_back(Eigen::Vector3f(-62, 157, _height));
 		}
 	}
 }
