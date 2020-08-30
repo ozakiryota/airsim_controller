@@ -86,7 +86,9 @@ void DroneWayPointFlight::setWayPoints(void)
 			_waypoints.push_back(Eigen::Vector3f(-158, 130, _height));
 			_waypoints.push_back(Eigen::Vector3f(-158, -43, _height));
 			_waypoints.push_back(Eigen::Vector3f(-14, -44, _height));
+			_waypoints.push_back(Eigen::Vector3f(10, -42, _height));
 			_waypoints.push_back(Eigen::Vector3f(72, -65, _height));
+			_waypoints.push_back(Eigen::Vector3f(79, -69, _height));
 			_waypoints.push_back(Eigen::Vector3f(127, -28, _height));
 			_waypoints.push_back(Eigen::Vector3f(225, -26, _height));
 			_waypoints.push_back(Eigen::Vector3f(230, 7, _height));
