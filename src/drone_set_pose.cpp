@@ -57,7 +57,7 @@ void DroneRandomPose::interaction(void)
 	while(!is_done){
 		/*set pose*/
 		setPose();
-		_client.simPause(true);
+		// _client.simPause(true);
 		updateState();
 		/*save*/
 		std::string save_y_or_n;
@@ -77,7 +77,7 @@ void DroneRandomPose::interaction(void)
 			else if(continue_y_or_n == "n")	is_done = true;
 			else	std::cout << "Type y or n" << std::endl;
 		}
-		_client.simPause(false);
+		// _client.simPause(false);
 	}
 }
 
