@@ -53,6 +53,15 @@ DroneRandomPose::DroneRandomPose()
 	_list_camera = {
 		"camera_0"
 	};
+	/*
+	_list_camera = {
+		"camera_0",
+		"camera_72",
+		"camera_144",
+		"camera_216",
+		"camera_288"
+	};
+	*/
 	/*csv*/
 	if(_save_data)	csvInitialization();
 }
