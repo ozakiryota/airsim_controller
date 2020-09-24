@@ -36,6 +36,15 @@ DroneRandomPose::DroneRandomPose()
 	_list_camera = {
 		"camera_0"
 	};
+	/*
+	_list_camera = {
+		"camera_0",
+		"camera_72",
+		"camera_144",
+		"camera_216",
+		"camera_288"
+	};
+	*/
 }
 
 void DroneRandomPose::clientInitialization(void)
@@ -62,7 +71,7 @@ void DroneRandomPose::interaction(void)
 		/*save*/
 		std::string save_y_or_n;
 		while(save_y_or_n != "y" && save_y_or_n != "n"){
-			std::cout << "Enter: Do you save the pictures and data? (y or n)" << std::endl;
+			std::cout << "Enter: Do you want to save the pictures and data? (y or n)" << std::endl;
 			std::cin >> save_y_or_n;
 			if(save_y_or_n == "y")	saveData();
 			else if(save_y_or_n == "n")	std::cout << "Dumped" << std::endl;
@@ -71,7 +80,7 @@ void DroneRandomPose::interaction(void)
 		/*repeat*/
 		std::string continue_y_or_n;
 		while(continue_y_or_n != "y" && continue_y_or_n != "n"){
-			std::cout << "Enter: Do you continue setting another pose? (y or n)" << std::endl;
+			std::cout << "Enter: Do you want to continue setting another pose? (y or n)" << std::endl;
 			std::cin >> continue_y_or_n;
 			if(continue_y_or_n == "y")	is_done = false;
 			else if(continue_y_or_n == "n")	is_done = true;
