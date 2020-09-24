@@ -235,7 +235,7 @@ bool DroneRandomPose::saveData(void)
 				img_cv.at<cv::Vec3b>(row, col)[2] = list_response[i].image_data_uint8[3*row*list_response[i].width + 3*col + 2];
 			}
 		}
-		std::cout << "Save: " << save_path << std::endl;
+		std::cout << "Saved: " << save_path << std::endl;
 		cv::imwrite(save_path, img_cv);              
 		// std::cout << "size: " << list_response[i].image_data_uint8.size() << std::endl;
 		// std::cout << "height: " << list_response[i].height << std::endl;
@@ -246,9 +246,9 @@ bool DroneRandomPose::saveData(void)
 	_csvfile 
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
-		<< -_imu.linear_acceleration.z() << ",";
+		<< -_imu.linear_acceleration.z();
 	for(size_t i=0; i<list_img_name.size(); ++i){
-		_csvfile << list_img_name[i] << ",";
+		_csvfile << "," << list_img_name[i];
 	}
 	_csvfile << std::endl;
 
