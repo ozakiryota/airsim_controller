@@ -20,17 +20,6 @@
           "SensorType": 2,
           "Enabled": true
         },
-        "LidarCustom": {
-          "SensorType": 6,
-          "Enabled": true,
-          "NumberOfChannels": 32,
-          "PointsPerSecond": 10000,
-          "X": 0,
-          "Y": 0,
-          "Z": 0,
-          "DrawDebugPoints": false
-        }
-      },
       "Cameras": {
         "camera_0": {
           "CaptureSettings": [

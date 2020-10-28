@@ -20,6 +20,21 @@
           "SensorType": 2,
           "Enabled": true
         },
+        "LidarCustom": {
+          "SensorType": 6,
+          "Enabled": true,
+          "NumberOfChannels": 32,
+		  "VerticalFOVUpper": 15,
+		  "VerticalFOVLower": -25,
+          "PointsPerSecond": 1200000,
+		  "RotationsPerSecond": 20,
+          "X": 0,
+          "Y": 0,
+          "Z": -0.4,
+          "DrawDebugPoints": false,
+		  "DataFrame": "SensorLocalFrame"
+        }
+      },
       "Cameras": {
         "camera_0": {
           "CaptureSettings": [

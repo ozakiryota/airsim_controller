@@ -53,5 +53,5 @@ target_link_libraries(drone_waypoint_flight_withnoise AirLib rpc)
 add_executable(drone_set_pose src/drone_set_pose.cpp)
 target_link_libraries(drone_set_pose AirLib rpc ${OpenCV_LIBRARIES})
 #
-add_executable(visualize_lidar_data src/visualize_lidar_data.cpp)
-target_link_libraries(visualize_lidar_data AirLib rpc ${PCL_LIBRARIES})
+add_executable(save_lidar_data src/save_lidar_data.cpp)
+target_link_libraries(save_lidar_data AirLib rpc ${PCL_LIBRARIES})
