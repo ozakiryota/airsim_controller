@@ -2,6 +2,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/visualization/cloud_viewer.h>
 
 class VisualizeLidarData{
 	private:
@@ -37,7 +38,7 @@ void VisualizeLidarData::getData(void)
 		tmp.x = lidar_data.point_cloud[i];
 		tmp.y = lidar_data.point_cloud[i+1];
 		tmp.z = lidar_data.point_cloud[i+2];
-		_pc.points.push_back(tmp);
+		_pc.points->push_back(tmp);
 	}
 	visualization();
 }
