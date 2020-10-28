@@ -5,6 +5,8 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
 
+#include"cnpy.h"
+
 class SaveLidarData{
 	private:
 		/*client*/
@@ -34,7 +36,7 @@ void SaveLidarData::getData(void)
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
 	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
 		std::cout
-			<< i << "~" << i+2 << ": "
+			<< "i = " << i << "~" << i+2 << ": "
 			"x = " << lidar_data.point_cloud[i] << ", "
 			"y = " << lidar_data.point_cloud[i+1] << ", "
 			"z = " << lidar_data.point_cloud[i+2] << std::endl;
@@ -58,6 +60,7 @@ void SaveLidarData::pcAdjustWH(void)
 
 void SaveLidarData::pcNedToNeu(void)
 {
+	std::cout << "NED -> NEU" << std::endl;
 	for(size_t i=0; i<_pc->points.size(); ++i){
 		_pc->points[i].y *= -1;
 		_pc->points[i].z *= -1;

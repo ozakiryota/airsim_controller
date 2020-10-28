@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(airsim_controller)
 
-# add_compile_options(-std=c++11)
 add_compile_options(-std=c++11 -O2 -g -Wall)
 
-find_package(
-	OpenCV
-)
-find_package(
-	PCL
-)
+find_package(OpenCV)
+find_package(PCL)
+
+## for "cnpy"
+link_directories(/usr/local/lib)
 
 # set(AIRSIM_ROOT ../AirSim)
 find_path(AIRSIM_ROOT
@@ -31,6 +29,7 @@ include_directories(
 	${OpenCV_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
 )
+
 
 add_executable(hello_drone src/hello_drone.cpp)
 target_link_libraries(hello_drone AirLib rpc)
@@ -54,4 +53,4 @@ add_executable(drone_set_pose src/drone_set_pose.cpp)
 target_link_libraries(drone_set_pose AirLib rpc ${OpenCV_LIBRARIES})
 #
 add_executable(save_lidar_data src/save_lidar_data.cpp)
-target_link_libraries(save_lidar_data AirLib rpc ${PCL_LIBRARIES})
+target_link_libraries(save_lidar_data AirLib rpc ${PCL_LIBRARIES} cnpy)

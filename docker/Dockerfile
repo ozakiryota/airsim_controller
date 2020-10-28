@@ -48,9 +48,20 @@ RUN sed -i "s/#include <filesystem>/#include <experimental\/filesystem>/g" /home
 	sed -i "s/using namespace std::filesystem;/using namespace std::experimental::filesystem;/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/Commands.cpp &&\
 	sed -i "s/#include <filesystem>/#include <experimental\/filesystem>/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/main.cpp &&\
 	sed -i "s/using namespace std::filesystem;/using namespace std::experimental::filesystem;/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/main.cpp
-######### NO cache #########
-ARG CACHEBUST=1
 ######### My project #########
+##### cnpy #####
+RUN mkdir /home/cnpy_ws &&\
+	cd /home/cnpy_ws &&\
+	git clone https://github.com/rogersce/cnpy && \
+	cd cnpy && \
+	mkdir build && \
+	cd build && \
+	cmake .. && \
+	make -j $(nproc --all) && \
+	make install
+##### NO cache #####
+ARG CACHEBUST=1
+##### clone ##### 
 RUN cd /home/airsim_ws &&\
 	git clone https://github.com/ozakiryota/airsim_controller &&\
 	cd airsim_controller &&\
