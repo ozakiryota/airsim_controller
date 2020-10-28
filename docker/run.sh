@@ -4,6 +4,7 @@ image_name="airsim_controller"
 root_path=$(pwd)
 
 xhost +
+xhost +local:docker
 docker run -it --rm \
 	--env="DISPLAY" \
 	--env="QT_X11_NO_MITSHM=1" \

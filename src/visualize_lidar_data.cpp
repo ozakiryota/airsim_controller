@@ -12,7 +12,6 @@ class VisualizeLidarData{
 		pcl::PointCloud<pcl::PointXYZ>::Ptr _pc {new pcl::PointCloud<pcl::PointXYZ>};
 		/*list*/
 		/*csv*/
-		std::ofstream _csvfile;
 		/*parameter*/
 
 	public:
@@ -45,10 +44,12 @@ void VisualizeLidarData::getData(void)
 
 void VisualizeLidarData::visualization(void)
 {
-	pcl::visualization::CloudViewer viewer("visualize_lidar_data");
-	viewer.showCloud(_pc);
-	while(!viewer.wasStopped()){
-	}
+	/* pcl::visualization::CloudViewer viewer("visualize_lidar_data"); */
+	/* viewer.showCloud(_pc); */
+	/* while(!viewer.wasStopped()){ */
+	/* 	std::cout << "test" << std::endl; */
+	/* } */
+	std::cout << "test" << std::endl;
 }
 
 int main(void) 
