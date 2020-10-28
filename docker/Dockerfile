@@ -48,9 +48,9 @@ RUN sed -i "s/#include <filesystem>/#include <experimental\/filesystem>/g" /home
 	sed -i "s/using namespace std::filesystem;/using namespace std::experimental::filesystem;/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/Commands.cpp &&\
 	sed -i "s/#include <filesystem>/#include <experimental\/filesystem>/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/main.cpp &&\
 	sed -i "s/using namespace std::filesystem;/using namespace std::experimental::filesystem;/g" /home/airsim_ws/AirSim/MavLinkCom/MavLinkTest/main.cpp
-##### NO cache #####
+######### NO cache #########
 ARG CACHEBUST=1
-##### My project #####
+######### My project #########
 RUN cd /home/airsim_ws &&\
 	git clone https://github.com/ozakiryota/airsim_controller &&\
 	cd airsim_controller &&\

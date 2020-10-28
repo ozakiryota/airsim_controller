@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(airsim_controller)
 
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -O2 -g -Wall)
 
 find_package(
 	OpenCV
+)
+find_package(
+	PCL
 )
 
 # set(AIRSIM_ROOT ../AirSim)
@@ -25,6 +29,7 @@ include_directories(
 	${AIRSIM_ROOT}/MavLinkCom/common_utils
 	${AIRSIM_ROOT}/AirLib/deps/eigen3
 	${OpenCV_INCLUDE_DIRS}
+	${PCL_INCLUDE_DIRS}
 )
 
 add_executable(hello_drone src/hello_drone.cpp)
@@ -47,3 +52,6 @@ target_link_libraries(drone_waypoint_flight_withnoise AirLib rpc)
 #
 add_executable(drone_set_pose src/drone_set_pose.cpp)
 target_link_libraries(drone_set_pose AirLib rpc ${OpenCV_LIBRARIES})
+#
+add_executable(visualize_lidar_data src/visualize_lidar_data.cpp)
+target_link_libraries(visualize_lidar_data AirLib rpc)
