@@ -109,7 +109,6 @@ void DroneRandomPose::clientInitialization(void)
 	std::cout << "Reset" << std::endl;
 	_client.reset();
 	/*pose*/
-	msr::airlib::Pose goal = msr::airlib::Pose(Eigen::Vector3f(0.0, 0.0, 0.0), Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	updateState();
 	/*weather*/
@@ -338,7 +337,7 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		return false;
 	}
 	/*save*/
-	cnpy::npy_save(save_path, &mat[0], {_num_rings, _points_per_ring}, "w");
+	cnpy::npy_save(save_path, &mat[0], {(long unsigned int)_num_rings, (long unsigned int)_points_per_ring}, "w");
 	std::cout << "Saved: " << save_path << std::endl;
 
 	return true;
