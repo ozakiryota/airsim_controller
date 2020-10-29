@@ -13,27 +13,44 @@ class SaveLidarData{
 		msr::airlib::RpcLibClientBase _client;
 		/*pc*/
 		pcl::PointCloud<pcl::PointXYZ>::Ptr _pc {new pcl::PointCloud<pcl::PointXYZ>};
-		/*path*/
-		std::string _save_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.pcd";
+		/*parameter*/
+		std::string _save_pcd_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.pcd";
+		std::string _save_npy_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.npy";
+		int _num_rings = 32;
+		int _points_per_ring = 1812;
+		double _fov_upper_deg = 15;
+		double _fov_lower_deg = -25;
 
 	public:
 		SaveLidarData();
-		void getData(void);
-		void pcAdjustWH(void);
+		void process(void);
+		void inputDataToPc(msr::airlib::LidarData lidar_data);
 		void pcNedToNeu(void);
 		void visualization(void);
-		void save(void);
+		void savePCD(void);
+		void saveNPY(void);
 };
 
 SaveLidarData::SaveLidarData()
 {
 	std::cout << "----- save_lidar_data -----" << std::endl;
+	/*initialize*/
 	_client.confirmConnection();
 }
 
-void SaveLidarData::getData(void)
+void SaveLidarData::process(void)
 {
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
+	inputDataToPc(lidar_data);
+	pcNedToNeu();
+	// visualization();
+	savePCD();
+	saveNPY();
+}
+
+void SaveLidarData::inputDataToPc(msr::airlib::LidarData lidar_data)
+{
+	/*input*/
 	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
 		std::cout
 			<< "i = " << i << "~" << i+2 << ": "
@@ -46,16 +63,11 @@ void SaveLidarData::getData(void)
 		tmp.z = lidar_data.point_cloud[i+2];
 		_pc->points.push_back(tmp);
 	}
-	pcAdjustWH();
-	pcNedToNeu();
-	// visualization();
-	save();
-}
-
-void SaveLidarData::pcAdjustWH(void)
-{
+	/*width x height*/
 	_pc->width = _pc->points.size();
 	_pc->height = 1;
+	/*print*/
+	std::cout << "_pc->points.size() = " << _pc->points.size() << std::endl;
 }
 
 void SaveLidarData::pcNedToNeu(void)
@@ -75,16 +87,49 @@ void SaveLidarData::visualization(void)
 	}
 }
 
-void SaveLidarData::save(void)
+void SaveLidarData::savePCD(void)
 {
-	pcl::io::savePCDFileASCII(_save_path, *_pc);
-	std::cout << "The point cloud was saved as " << _save_path << std::endl;
+	pcl::io::savePCDFileASCII(_save_pcd_path, *_pc);
+	std::cout << "Saved: " << _save_pcd_path << std::endl;
+}
+
+void SaveLidarData::saveNPY(void)
+{
+	/*resolution*/
+	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)_num_rings;
+	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
+	/*initialize*/
+	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
+	/*input*/
+	for(size_t i=0; i<_pc->points.size(); ++i){
+		/*row*/
+		double angle_h = atan2(_pc->points[i].z, _pc->points[i].x);
+		int row = (_fov_upper_deg/180.0*M_PI - angle_h)/angle_h_resolution;
+		/*col*/
+		double angle_w = atan2(_pc->points[i].y, _pc->points[i].x);
+		int col = (_points_per_ring - 1) - (int)((angle_w + M_PI)/angle_w_resolution);
+		/*depth*/
+		double depth = sqrt(_pc->points[i].x*_pc->points[i].x + _pc->points[i].y*_pc->points[i].y);
+		/*input*/
+		mat[row*_num_rings + col] = depth;
+	}
+	/*save*/
+	cnpy::npy_save(_save_npy_path, &mat[0], {_num_rings, _points_per_ring}, "w");
+	std::cout << "Saved: " << _save_npy_path << std::endl;
+	/*print*/
+	//std::cout << "mat: " << std::endl;
+	//for(int row=0; row<_num_rings; ++row){
+	//	for(int col=0; col<_points_per_ring; ++col){
+	//		std::cout << mat[row*_num_rings + col] << " ";
+	//	}
+	//	std::cout << std::endl;
+	//}
 }
 
 int main(void) 
 {
 	SaveLidarData save_lidar_data;
-	save_lidar_data.getData();
+	save_lidar_data.process();
 
 	return 0;
 }
