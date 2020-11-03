@@ -20,7 +20,7 @@ class DroneRandomPose{
 		const bool _save_data = true;
 		const int _num_sampling = 100;
 		const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/tmp";
-		const std::string _save_csv_path = _save_root_path + "/imu_lidar_camera.csv";
+		std::string _save_csv_path = _save_root_path + "/imu.csv";
 		/*parameter-condition*/
 		const bool _lidar_is_available = false;
 		const bool _randomize_whether = true;
@@ -74,6 +74,8 @@ DroneRandomPose::DroneRandomPose()
 	};
 	*/
 	/*csv*/
+	if(_lidar_is_available)	_save_csv_path = _save_csv_path - ".csv" + "_lidar.csv";
+	if(_list_camera.size()>0)	_save_csv_path = _save_csv_path - ".csv" + "_camera.csv";
 	if(_save_data)	csvInitialization();
 }
 
@@ -308,10 +310,8 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
 	/*initialize*/
 	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
-	std::cout << "mat.size() = " << mat.size() << std::endl;
 	/*get*/
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
-	std::cout << "test: get" << std::endl;
 	/*input*/
 	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
 		/*NED -> NEU*/
@@ -337,18 +337,15 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		/*input*/
 		mat[row*_num_rings + col] = depth;
 	}
-	std::cout << "test: input" << std::endl;
 	/*path*/
 	depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
 	std::string save_path = _save_root_path + "/" + depthimg_name;
-	std::cout << "test: path: " << save_path << std::endl;
 	/*check*/
 	std::ifstream ifs(save_path);
 	if(ifs.is_open()){
 		std::cout << save_path << " already exists" << std::endl;
 		return false;
 	}
-	std::cout << "test: check" << std::endl;
 	/*save*/
 	cnpy::npy_save(save_path, &mat[0], {(long unsigned int)_num_rings, (long unsigned int)_points_per_ring}, "w");
 	std::cout << "Saved: " << save_path << std::endl;
