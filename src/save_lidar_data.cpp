@@ -96,14 +96,14 @@ void SaveLidarData::savePCD(void)
 void SaveLidarData::saveNPY(void)
 {
 	/*resolution*/
-	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)_num_rings;
+	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)(_num_rings - 1);
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
 	/*initialize*/
 	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
 	/*input*/
 	for(size_t i=0; i<_pc->points.size(); ++i){
 		/*row*/
-		double angle_h = atan2(_pc->points[i].z, _pc->points[i].x);
+		double angle_h = atan2(_pc->points[i].z, sqrt(_pc->points[i].x*_pc->points[i].x + _pc->points[i].y*_pc->points[i].y));
 		int row = (_fov_upper_deg/180.0*M_PI - angle_h)/angle_h_resolution;
 		/*col*/
 		double angle_w = atan2(_pc->points[i].y, _pc->points[i].x);
