@@ -74,8 +74,8 @@ DroneRandomPose::DroneRandomPose()
 	};
 	*/
 	/*csv*/
-	if(_lidar_is_available)	_save_csv_path = _save_csv_path - ".csv" + "_lidar.csv";
-	if(_list_camera.size()>0)	_save_csv_path = _save_csv_path - ".csv" + "_camera.csv";
+	if(_lidar_is_available)	_save_csv_path.insert(_save_csv_path.size() - std::string(".csv").size(), "_lidar");
+	if(_list_camera.size() > 0)	_save_csv_path.insert(_save_csv_path.size() - std::string(".csv").size(), "_camera");
 	if(_save_data)	csvInitialization();
 }
 
