@@ -111,7 +111,7 @@ void SaveLidarData::saveNPY(void)
 		/*depth*/
 		double depth = sqrt(_pc->points[i].x*_pc->points[i].x + _pc->points[i].y*_pc->points[i].y);
 		/*input*/
-		mat[row*_num_rings + col] = depth;
+		mat[row*_points_per_ring + col] = depth;
 	}
 	/*save*/
 	cnpy::npy_save(_save_npy_path, &mat[0], {_num_rings, _points_per_ring}, "w");
