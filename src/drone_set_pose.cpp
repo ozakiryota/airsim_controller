@@ -1,9 +1,17 @@
 #include <iostream>
-#include "api/RpcLibClientBase.hpp"
 #include <fstream>
+
+#include "api/RpcLibClientBase.hpp"
+
 #include <opencv2/opencv.hpp>
 
-class DroneRandomPose{
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+
+#include"cnpy.h"
+
+class DroneSetPose{
 	private:
 		/*client*/
 		msr::airlib::RpcLibClientBase _client;
@@ -12,22 +20,28 @@ class DroneRandomPose{
 		msr::airlib::ImuBase::Output _imu;;
 		/*list*/
 		std::vector<std::string> _list_camera;
-		/*parameter*/
+		/*path*/
 		const std::string _save_root_path = "/home/airsim_ws/airsim_controller/save/set_pose";
-		/*txt*/
-		std::ofstream _txtfile;
+		/*parameter-lidar*/
+		const int _num_rings = 32;
+		const int _points_per_ring = 1812;
+		const double _fov_upper_deg = 15;
+		const double _fov_lower_deg = -25;
 
 	public:
-		DroneRandomPose();
+		DroneSetPose();
 		void clientInitialization(void);
 		void interaction(void);
 		void setPose(void);
-		void saveData(void);
 		void updateState(void);
+		void saveData(void);
+		void saveImage(void);
+		void savePC(void);
+		void savePoseAndIMU(void);
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
 
-DroneRandomPose::DroneRandomPose()
+DroneSetPose::DroneSetPose()
 {
 	std::cout << "----- drone_random_pose -----" << std::endl;
 	/*client*/
@@ -47,7 +61,7 @@ DroneRandomPose::DroneRandomPose()
 	*/
 }
 
-void DroneRandomPose::clientInitialization(void)
+void DroneSetPose::clientInitialization(void)
 {
 	/*connect*/
 	_client.confirmConnection();
@@ -60,7 +74,7 @@ void DroneRandomPose::clientInitialization(void)
 	updateState();
 }
 
-void DroneRandomPose::interaction(void)
+void DroneSetPose::interaction(void)
 {
 	bool is_done = false;
 	while(!is_done){
@@ -90,7 +104,7 @@ void DroneRandomPose::interaction(void)
 	}
 }
 
-void DroneRandomPose::setPose(void)
+void DroneSetPose::setPose(void)
 {
 	/*set pose*/
 	Eigen::Vector3f position;
@@ -134,7 +148,37 @@ void DroneRandomPose::setPose(void)
 	std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
-void DroneRandomPose::saveData(void)
+void DroneSetPose::updateState(void)
+{
+	/*pose*/
+	_pose = _client.simGetVehiclePose();
+	std::cout << "Pose: " << std::endl;
+	std::cout << " Position: "	//Eigen::Vector3f
+		<< _pose.position.x() << ", "
+		<< _pose.position.y() << ", "
+		<< _pose.position.z() << std::endl;
+	std::cout << " Orientation: "	//Eigen::Quaternionf
+		<< _pose.orientation.w() << ", "
+		<< _pose.orientation.x() << ", "
+		<< _pose.orientation.y() << ", "
+		<< _pose.orientation.z() << std::endl;
+	/*imu*/
+	_imu = _client.getImuData();
+	std::cout << "IMU: " << std::endl;
+	std::cout << " linear_acceleration: "	//Eigen::Vector3f
+		<< _imu.linear_acceleration.x() << ", "
+		<< _imu.linear_acceleration.y() << ", "
+		<< _imu.linear_acceleration.z() << std::endl;
+}
+
+void DroneSetPose::saveData(void)
+{
+	saveImage();
+	savePC();
+	savePoseAndIMU();
+}
+
+void DroneSetPose::saveImage(void)
 {
 	/*list*/
 	std::vector<std::string> list_img_name(_list_camera.size());
@@ -160,57 +204,80 @@ void DroneRandomPose::saveData(void)
 		std::cout << "Save: " << save_path << std::endl;
 		cv::imwrite(save_path, img_cv);              
 	}
+}
+
+void DroneSetPose::savePC(void)
+{
+	/*get*/
+	msr::airlib::LidarData lidar_data = _client.getLidarData("");
+	/*vector->pcl (NEU)*/
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pc {new pcl::PointCloud<pcl::PointXYZ>};
+	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
+		pcl::PointXYZ tmp;
+		tmp.x = lidar_data.point_cloud[i];
+		tmp.y = -lidar_data.point_cloud[i+1];
+		tmp.z = -lidar_data.point_cloud[i+2];
+		pc->points.push_back(tmp);
+	}
+	/*width x height*/
+	pc->width = pc->points.size();
+	pc->height = 1;
+	/*save PCD*/
+	const std::string save_pcd_path = _save_root_path + "/lidar.pcd";
+	pcl::io::savePCDFileASCII(save_pcd_path, *pc);
+
+	/*pcl->mat*/
+	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
+	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)(_num_rings - 1);
+	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
+	for(size_t i=0; i<pc->points.size(); ++i){
+		/*row*/
+		double angle_h = atan2(pc->points[i].z, sqrt(pc->points[i].x*pc->points[i].x + pc->points[i].y*pc->points[i].y));
+		int row = (_fov_upper_deg/180.0*M_PI - angle_h)/angle_h_resolution;
+		/*col*/
+		double angle_w = atan2(pc->points[i].y, pc->points[i].x);
+		int col = (_points_per_ring - 1) - (int)((angle_w + M_PI)/angle_w_resolution);
+		/*depth*/
+		double depth = sqrt(pc->points[i].x*pc->points[i].x + pc->points[i].y*pc->points[i].y);
+		/*input*/
+		mat[row*_points_per_ring + col] = depth;
+	}
+	/*save NPY*/
+	const std::string save_npy_path = _save_root_path + "/lidar.npy";
+	cnpy::npy_save(save_npy_path, &mat[0], {_num_rings, _points_per_ring}, "w");
+}
+
+void DroneSetPose::savePoseAndIMU(void)
+{
 	/*open*/
+	std::ofstream txtfile;
 	const std::string save_txt_path = _save_root_path + "/param_note.txt";
-	_txtfile.open(save_txt_path, std::ios::out);
-	if(!_txtfile){
+	txtfile.open(save_txt_path, std::ios::out);
+	if(!txtfile){
 		std::cout << "Cannot open " << save_txt_path << std::endl;
 		exit(1);
 	}
 	/*write*/
-	_txtfile << "Pose: " << std::endl;
-	_txtfile << " Position: "
+	txtfile << "Pose: " << std::endl;
+	txtfile << " Position: "
 		<< _pose.position.x() << ", "
 		<< _pose.position.y() << ", "
 		<< _pose.position.z() << std::endl;
-	_txtfile << " Orientation: "
+	txtfile << " Orientation: "
 		<< _pose.orientation.w() << ", "
 		<< _pose.orientation.x() << ", "
 		<< _pose.orientation.y() << ", "
 		<< _pose.orientation.z() << std::endl;
-	_txtfile << "IMU: " << std::endl;
-	_txtfile << " linear_acceleration: "
+	txtfile << "IMU: " << std::endl;
+	txtfile << " linear_acceleration: "
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
 		<< -_imu.linear_acceleration.z() << std::endl;
 	/*close*/
-	_txtfile.close();
+	txtfile.close();
 }
 
-void DroneRandomPose::updateState(void)
-{
-	/*pose*/
-	_pose = _client.simGetVehiclePose();
-	std::cout << "Pose: " << std::endl;
-	std::cout << " Position: "	//Eigen::Vector3f
-		<< _pose.position.x() << ", "
-		<< _pose.position.y() << ", "
-		<< _pose.position.z() << std::endl;
-	std::cout << " Orientation: "	//Eigen::Quaternionf
-		<< _pose.orientation.w() << ", "
-		<< _pose.orientation.x() << ", "
-		<< _pose.orientation.y() << ", "
-		<< _pose.orientation.z() << std::endl;
-	/*imu*/
-	_imu = _client.getImuData();
-	std::cout << "IMU: " << std::endl;
-	std::cout << " linear_acceleration: "	//Eigen::Vector3f
-		<< _imu.linear_acceleration.x() << ", "
-		<< _imu.linear_acceleration.y() << ", "
-		<< _imu.linear_acceleration.z() << std::endl;
-}
-
-void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
+void DroneSetPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf& q)
 {
 	q = Eigen::AngleAxisf(y, Eigen::Vector3f::UnitZ())
 		* Eigen::AngleAxisf(p, Eigen::Vector3f::UnitY())
@@ -219,7 +286,7 @@ void DroneRandomPose::eularToQuat(float r, float p, float y, Eigen::Quaternionf&
 
 int main(void) 
 {
-	DroneRandomPose drone_random_pose;
+	DroneSetPose drone_random_pose;
 	drone_random_pose.interaction();
 
 	return 0;

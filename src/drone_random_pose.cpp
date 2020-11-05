@@ -31,12 +31,10 @@ class DroneRandomPose{
 		const float _z_max = -2.0;
 		const float _rp_range = M_PI/6.0;
 		/*parameter-lidar*/
-		int _num_rings = 32;
-		int _points_per_ring = 1812;
-		double _fov_upper_deg = 15;
-		double _fov_lower_deg = -25;
-		/*txt*/
-		std::ofstream _txtfile;
+		const int _num_rings = 32;
+		const int _points_per_ring = 1812;
+		const double _fov_upper_deg = 15;
+		const double _fov_lower_deg = -25;
 
 	public:
 		DroneRandomPose();
@@ -82,15 +80,16 @@ DroneRandomPose::DroneRandomPose()
 void DroneRandomPose::leaveParamNote(void)
 {
 	/*open*/
+	std::ofstream txtfile;
 	const std::string _save_txt_path = _save_root_path + "/param_note.txt";
-	// _txtfile.open(_save_txt_path, std::ios::out);
-	_txtfile.open(_save_txt_path, std::ios::app);
-	if(!_txtfile){
+	// txtfile.open(_save_txt_path, std::ios::out);
+	txtfile.open(_save_txt_path, std::ios::app);
+	if(!txtfile){
 		std::cout << "Cannot open " << _save_txt_path << std::endl;
 		exit(1);
 	}
 	/*write*/
-	_txtfile
+	txtfile
 		<< "----------" << std::endl
 		<< "_randomize_whether" << ": " << (bool)_randomize_whether << std::endl
 		<< "_num_sampling" << ": " << _num_sampling << std::endl
@@ -100,7 +99,7 @@ void DroneRandomPose::leaveParamNote(void)
 		<< "_z_max" << ": " << _z_max << std::endl
 		<< "_rp_range" << ": " << _rp_range/M_PI*180.0 << std::endl;
 	/*close*/
-	_txtfile.close();
+	txtfile.close();
 }
 
 void DroneRandomPose::clientInitialization(void)
@@ -215,7 +214,7 @@ void DroneRandomPose::randomPose(void)
 			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	std::this_thread::sleep_for(std::chrono::milliseconds(400));
 }
 
 void DroneRandomPose::updateState(void)

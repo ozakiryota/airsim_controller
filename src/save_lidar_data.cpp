@@ -14,12 +14,12 @@ class SaveLidarData{
 		/*pc*/
 		pcl::PointCloud<pcl::PointXYZ>::Ptr _pc {new pcl::PointCloud<pcl::PointXYZ>};
 		/*parameter*/
-		std::string _save_pcd_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.pcd";
-		std::string _save_npy_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.npy";
-		int _num_rings = 32;
-		int _points_per_ring = 1812;
-		double _fov_upper_deg = 15;
-		double _fov_lower_deg = -25;
+		const std::string _save_pcd_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.pcd";
+		const std::string _save_npy_path = "/home/airsim_ws/airsim_controller/save/tmp/tmp.npy";
+		const int _num_rings = 32;
+		const int _points_per_ring = 1812;
+		const double _fov_upper_deg = 15;
+		const double _fov_lower_deg = -25;
 
 	public:
 		SaveLidarData();
