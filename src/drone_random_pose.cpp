@@ -335,7 +335,7 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		/*depth*/
 		double depth = sqrt(p_x*p_x + p_y*p_y);
 		/*input*/
-		mat[row*_num_rings + col] = depth;
+		mat[row*_points_per_ring + col] = depth;
 	}
 	/*path*/
 	depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
