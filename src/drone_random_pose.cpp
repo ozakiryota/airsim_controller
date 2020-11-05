@@ -320,17 +320,19 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		/*row*/
 		double angle_h = atan2(p_z, sqrt(p_x*p_x + p_y*p_y));
 		int row = (_fov_upper_deg/180.0*M_PI - angle_h)/angle_h_resolution;
-		//if(row < 0 || row >= _num_rings){
-		//	std::cout << "ERROR: row = " << row << std::endl;
-		//	exit(1);
-		//}
+		if(row < 0 || row >= _num_rings){
+			std::cout << "ERROR: row = " << row << std::endl;
+			// exit(1);
+			return false;
+		}
 		/*col*/
 		double angle_w = atan2(p_y, p_x);
 		int col = (_points_per_ring - 1) - (int)((angle_w + M_PI)/angle_w_resolution);
-		//if(col < 0 || col >= _points_per_ring){
-		//	std::cout << "ERROR col" << std::endl;
-		//	exit(1);
-		//}
+		if(col < 0 || col >= _points_per_ring){
+			std::cout << "ERROR col" << std::endl;
+			// exit(1);
+			return false;
+		}
 		/*depth*/
 		double depth = sqrt(p_x*p_x + p_y*p_y);
 		/*input*/

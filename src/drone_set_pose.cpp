@@ -69,7 +69,6 @@ void DroneSetPose::clientInitialization(void)
 	std::cout << "Reset" << std::endl;
 	_client.reset();
 	/*pose*/
-	msr::airlib::Pose goal = msr::airlib::Pose(Eigen::Vector3f(0.0, 0.0, 0.0), Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0));
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	updateState();
 }
@@ -210,8 +209,9 @@ void DroneSetPose::savePC(void)
 {
 	/*get*/
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
+	if(lidar_data.point_cloud.size() == 0)	return;
 	/*vector->pcl (NEU)*/
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pc {new pcl::PointCloud<pcl::PointXYZ>};
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pc (new pcl::PointCloud<pcl::PointXYZ>);
 	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
 		pcl::PointXYZ tmp;
 		tmp.x = lidar_data.point_cloud[i];
