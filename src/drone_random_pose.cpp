@@ -338,6 +338,14 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		/*input*/
 		mat[row*_points_per_ring + col] = depth;
 	}
+	/*test*/
+	//int test_counter = 0;
+	//std::cout << "lidar_data.point_cloud.size()/3 = " << lidar_data.point_cloud.size()/3 << std::endl;
+	//std::cout << "mat.size() = " << mat.size() << std::endl;
+	//for(size_t i=0; i<mat.size(); ++i){
+	//	if(mat[i] == 0)  ++test_counter;
+	//}
+	//std::cout << "test_counter = " << test_counter << std::endl;
 	/*path*/
 	depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
 	std::string save_path = _save_root_path + "/" + depthimg_name;
