@@ -308,7 +308,7 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)(_num_rings - 1);
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
 	/*initialize*/
-	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
+	std::vector<double> mat(_num_rings*_points_per_ring, -1);
 	/*get*/
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
 	/*input*/
