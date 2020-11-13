@@ -46,8 +46,8 @@ class DroneRandomPose{
 		void randomPose(void);
 		void updateState(void);
 		bool saveData(void);
-		bool saveImages(std::vector<std::string>& list_img_name);
-		bool saveLidarData(std::string& depthimg_name);
+		bool saveImages(std::vector<std::string>& list_save_colorimage_name, std::vector<std::string>& list_save_colorimage_path, std::vector<cv::Mat>& list_colorimage_cv);
+		bool saveLidarData(std::string& save_depthimg_name, std::string& save_depthimg_path, std::vector<double>& depthimage_mat);
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 };
 
@@ -242,31 +242,42 @@ void DroneRandomPose::updateState(void)
 
 bool DroneRandomPose::saveData(void)
 {
-	/*image*/
-	std::vector<std::string> list_img_name(_list_camera.size());
-	if(!saveImages(list_img_name))	return false;
-
-	/*lidar*/
-	std::string depthimg_name;
+	/*get image*/
+	std::vector<std::string> list_save_colorimage_name(_list_camera.size());
+	std::vector<std::string> list_save_colorimage_path(_list_camera.size());
+	std::vector<cv::Mat> list_colorimage_cv(_list_camera.size());
+	if(!saveImages(list_save_colorimage_name, list_save_colorimage_path, list_colorimage_cv))	return false;
+	/*get lidar*/
+	std::string save_depthimg_name;
+	std::string save_depthimg_path;
+	std::vector<double> depthimage_mat(_num_rings*_points_per_ring, -1);
 	if(_lidar_is_available){
-		if(!saveLidarData(depthimg_name))	return false;
+		if(!saveLidarData(save_depthimg_name, save_depthimg_path, depthimage_mat))	return false;
 	}
-
+	/*save*/
+	for(size_t i=0; i<list_save_colorimage_path.size(); ++i){
+		std::cout << "Saved: " << list_save_colorimage_path[i] << std::endl;
+		cv::imwrite(list_save_colorimage_path[i], list_colorimage_cv[i]);
+	}
+	if(_lidar_is_available){
+		cnpy::npy_save(save_depthimg_path, &depthimage_mat[0], {(long unsigned int)_num_rings, (long unsigned int)_points_per_ring}, "w");
+		std::cout << "Saved: " << save_depthimg_path << std::endl;
+	}
 	/*imu (NEU) with other*/
 	_csvfile 
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
 		<< -_imu.linear_acceleration.z();
-	if(_lidar_is_available)	_csvfile << "," << depthimg_name;
-	for(size_t i=0; i<list_img_name.size(); ++i){
-		_csvfile << "," << list_img_name[i];
+	if(_lidar_is_available)	_csvfile << "," << save_depthimg_name;
+	for(size_t i=0; i<list_save_colorimage_name.size(); ++i){
+		_csvfile << "," << list_save_colorimage_name[i];
 	}
 	_csvfile << std::endl;
 
 	return true;
 }
 
-bool DroneRandomPose::saveImages(std::vector<std::string>& list_img_name)
+bool DroneRandomPose::saveImages(std::vector<std::string>& list_save_colorimage_name, std::vector<std::string>& list_save_colorimage_path, std::vector<cv::Mat>& list_colorimage_cv)
 {
 	/*request-responce*/
 	std::vector<msr::airlib::ImageCaptureBase::ImageRequest> list_request(_list_camera.size());
@@ -276,8 +287,8 @@ bool DroneRandomPose::saveImages(std::vector<std::string>& list_img_name)
 	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> list_response = _client.simGetImages(list_request);
 	/*access each image*/
 	for(size_t i=0; i<list_response.size(); ++i){
-		list_img_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
-		std::string save_path = _save_root_path + "/" + list_img_name[i];
+		list_save_colorimage_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
+		std::string save_path = _save_root_path + "/" + list_save_colorimage_name[i];
 		/*check*/
 		std::ifstream ifs(save_path);
 		if(ifs.is_open()){
@@ -293,8 +304,8 @@ bool DroneRandomPose::saveImages(std::vector<std::string>& list_img_name)
 				img_cv.at<cv::Vec3b>(row, col)[2] = list_response[i].image_data_uint8[3*row*list_response[i].width + 3*col + 2];
 			}
 		}
-		std::cout << "Saved: " << save_path << std::endl;
-		cv::imwrite(save_path, img_cv);              
+		list_save_colorimage_path[i] = save_path;
+		list_colorimage_cv[i] = img_cv;
 		// std::cout << "size: " << list_response[i].image_data_uint8.size() << std::endl;
 		// std::cout << "height: " << list_response[i].height << std::endl;
 		// std::cout << "width: " << list_response[i].width << std::endl;
@@ -302,13 +313,11 @@ bool DroneRandomPose::saveImages(std::vector<std::string>& list_img_name)
 	return true;
 }
 
-bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
+bool DroneRandomPose::saveLidarData(std::string& save_depthimg_name, std::string& save_depthimg_path, std::vector<double>& depthimage_mat)
 {
 	/*resolution*/
 	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)(_num_rings - 1);
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
-	/*initialize*/
-	std::vector<double> mat(_num_rings*_points_per_ring, -1);
 	/*get*/
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
 	/*input*/
@@ -336,28 +345,25 @@ bool DroneRandomPose::saveLidarData(std::string& depthimg_name)
 		/*depth*/
 		double depth = sqrt(p_x*p_x + p_y*p_y);
 		/*input*/
-		mat[row*_points_per_ring + col] = depth;
+		depthimage_mat[row*_points_per_ring + col] = depth;
 	}
 	/*test*/
 	//int test_counter = 0;
 	//std::cout << "lidar_data.point_cloud.size()/3 = " << lidar_data.point_cloud.size()/3 << std::endl;
-	//std::cout << "mat.size() = " << mat.size() << std::endl;
-	//for(size_t i=0; i<mat.size(); ++i){
-	//	if(mat[i] == 0)  ++test_counter;
+	//std::cout << "depthimage_mat.size() = " << depthimage_mat.size() << std::endl;
+	//for(size_t i=0; i<depthimage_mat.size(); ++i){
+	//	if(depthimage_mat[i] == 0)  ++test_counter;
 	//}
 	//std::cout << "test_counter = " << test_counter << std::endl;
 	/*path*/
-	depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
-	std::string save_path = _save_root_path + "/" + depthimg_name;
+	save_depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
+	save_depthimg_path = _save_root_path + "/" + save_depthimg_name;
 	/*check*/
-	std::ifstream ifs(save_path);
+	std::ifstream ifs(save_depthimg_path);
 	if(ifs.is_open()){
-		std::cout << save_path << " already exists" << std::endl;
+		std::cout << save_depthimg_path << " already exists" << std::endl;
 		return false;
 	}
-	/*save*/
-	cnpy::npy_save(save_path, &mat[0], {(long unsigned int)_num_rings, (long unsigned int)_points_per_ring}, "w");
-	std::cout << "Saved: " << save_path << std::endl;
 
 	return true;
 }
