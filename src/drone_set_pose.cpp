@@ -244,7 +244,8 @@ void DroneSetPose::savePC(void)
 	}
 	/*save NPY*/
 	const std::string save_npy_path = _save_root_path + "/lidar.npy";
-	cnpy::npy_save(save_npy_path, &mat[0], {_num_rings, _points_per_ring}, "w");
+	cnpy::npy_save(save_npy_path, &mat[0], {(long unsigned int)_num_rings, (long unsigned int)_points_per_ring}, "w");
+	std::cout << "Save: " << save_npy_path << std::endl;
 }
 
 void DroneSetPose::savePoseAndIMU(void)
