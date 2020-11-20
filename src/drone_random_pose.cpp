@@ -246,7 +246,9 @@ bool DroneRandomPose::saveData(void)
 	std::vector<std::string> list_save_colorimage_name(_list_camera.size());
 	std::vector<std::string> list_save_colorimage_path(_list_camera.size());
 	std::vector<cv::Mat> list_colorimage_cv(_list_camera.size());
-	if(!saveImages(list_save_colorimage_name, list_save_colorimage_path, list_colorimage_cv))	return false;
+	if(!_list_camera.empty()){
+		if(!saveImages(list_save_colorimage_name, list_save_colorimage_path, list_colorimage_cv))	return false;
+	}
 	/*get lidar*/
 	std::string save_depthimg_name;
 	std::string save_depthimg_path;
