@@ -226,8 +226,8 @@ void DroneSetPose::savePC(void)
 	const std::string save_pcd_path = _save_root_path + "/lidar.pcd";
 	pcl::io::savePCDFileASCII(save_pcd_path, *pc);
 
-	/*pcl->mat*/
-	std::vector<double> mat(_num_rings*_points_per_ring, 0.0);
+	/*pcl -> mat*/
+	std::vector<double> mat(_num_rings*_points_per_ring, -1.0);
 	double angle_h_resolution = (_fov_upper_deg - _fov_lower_deg)/180.0*M_PI/(double)(_num_rings - 1);
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
 	for(size_t i=0; i<pc->points.size(); ++i){
