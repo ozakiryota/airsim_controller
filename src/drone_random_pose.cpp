@@ -24,6 +24,7 @@ class DroneRandomPose{
 		/*parameter-condition*/
 		const bool _lidar_is_available = false;
 		const bool _randomize_whether = true;
+		const double _wait_time_sec = 0.3;
 		/*parameter-pose*/
 		const float _x_range = 200.0;	//Neighborhood: 200, SoccerField: 350
 		const float _y_range = 200.0;	//Neighborhood: 200, SoccerField: 300
@@ -214,7 +215,7 @@ void DroneRandomPose::randomPose(void)
 			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(400));
+	std::this_thread::sleep_for(std::chrono::seconds(_wait_time_sec));
 }
 
 void DroneRandomPose::updateState(void)
@@ -292,10 +293,15 @@ bool DroneRandomPose::saveImages(std::vector<std::string>& list_save_colorimage_
 	for(size_t i=0; i<list_response.size(); ++i){
 		list_save_colorimage_name[i] = std::to_string(list_response[i].time_stamp) + "_" +  _list_camera[i] + ".jpg";
 		std::string save_path = _save_root_path + "/" + list_save_colorimage_name[i];
-		/*check*/
+		/*check-file*/
 		std::ifstream ifs(save_path);
 		if(ifs.is_open()){
 			std::cout << save_path << " already exists" << std::endl;
+			return false;
+		}
+		/*check-timestamp*/
+		if((list_response[i].time_stamp - _imu.time_stamp)*1e-9 > _wait_time_sec){
+			std::cout << "(list_response[i].time_stamp - _imu.time_stamp)*1e-9 = " << (list_response[i].time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_sec << std::endl;
 			return false;
 		}
 		/*std::vector -> cv::mat*/
@@ -323,6 +329,20 @@ bool DroneRandomPose::saveLidarData(std::string& save_depthimg_name, std::string
 	double angle_w_resolution = 2*M_PI/(double)_points_per_ring;
 	/*get*/
 	msr::airlib::LidarData lidar_data = _client.getLidarData("");
+	/*path*/
+	save_depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
+	save_depthimg_path = _save_root_path + "/" + save_depthimg_name;
+	/*check*/
+	std::ifstream ifs(save_depthimg_path);
+	if(ifs.is_open()){
+		std::cout << save_depthimg_path << " already exists" << std::endl;
+		return false;
+	}
+	/*check-timestamp*/
+	if((lidar_data.time_stamp - _imu.time_stamp)*1e-9 > _wait_time_sec){
+		std::cout << "(lidar_data.time_stamp - _imu.time_stamp)*1e-9 = " << (lidar_data.time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_sec << std::endl;
+		return false;
+	}
 	/*input*/
 	for(size_t i=0; i<lidar_data.point_cloud.size(); i+=3){
 		/*NED -> NEU*/
@@ -358,15 +378,6 @@ bool DroneRandomPose::saveLidarData(std::string& save_depthimg_name, std::string
 	//	if(depthimage_mat[i] == 0)  ++test_counter;
 	//}
 	//std::cout << "test_counter = " << test_counter << std::endl;
-	/*path*/
-	save_depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
-	save_depthimg_path = _save_root_path + "/" + save_depthimg_name;
-	/*check*/
-	std::ifstream ifs(save_depthimg_path);
-	if(ifs.is_open()){
-		std::cout << save_depthimg_path << " already exists" << std::endl;
-		return false;
-	}
 
 	return true;
 }
