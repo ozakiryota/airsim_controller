@@ -24,7 +24,7 @@ class DroneRandomPose{
 		/*parameter-condition*/
 		const bool _lidar_is_available = false;
 		const bool _randomize_whether = true;
-		const double _wait_time_millisec = 400;
+		const int _wait_time_millisec = 400;
 		/*parameter-pose*/
 		const float _x_range = 200.0;	//Neighborhood: 200, SoccerField: 350
 		const float _y_range = 200.0;	//Neighborhood: 200, SoccerField: 300
@@ -332,7 +332,7 @@ bool DroneRandomPose::saveLidarData(std::string& save_depthimg_name, std::string
 	/*path*/
 	save_depthimg_name = std::to_string(lidar_data.time_stamp) + ".npy";
 	save_depthimg_path = _save_root_path + "/" + save_depthimg_name;
-	/*check*/
+	/*check-file*/
 	std::ifstream ifs(save_depthimg_path);
 	if(ifs.is_open()){
 		std::cout << save_depthimg_path << " already exists" << std::endl;
