@@ -24,7 +24,7 @@ class DroneRandomPose{
 		/*parameter-condition*/
 		const bool _lidar_is_available = false;
 		const bool _randomize_whether = true;
-		const int _wait_time_millisec = 400;
+		const int _wait_time_millisec = 200;
 		/*parameter-pose*/
 		const float _x_range = 200.0;	//Neighborhood: 200, SoccerField: 350
 		const float _y_range = 200.0;	//Neighborhood: 200, SoccerField: 300
@@ -151,7 +151,7 @@ void DroneRandomPose::startSampling(void)
 	std::cout << "Start sampling" << std::endl;
 
 	for(int i=0; i<_num_sampling;){
-		std::cout << "--- sample " << i << " ---" << std::endl;
+		std::cout << "--- sample " << i << " / " << _num_sampling << " ---" << std::endl;
 		if(_randomize_whether)	randomWeather();
 		randomPose();
 		_client.simPause(true);
