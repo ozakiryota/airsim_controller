@@ -24,7 +24,7 @@ class DroneRandomPose{
 		/*parameter-condition*/
 		const bool _lidar_is_available = false;
 		const bool _randomize_whether = true;
-		const double _wait_time_sec = 0.3;
+		const double _wait_time_millisec = 400;
 		/*parameter-pose*/
 		const float _x_range = 200.0;	//Neighborhood: 200, SoccerField: 350
 		const float _y_range = 200.0;	//Neighborhood: 200, SoccerField: 300
@@ -215,7 +215,7 @@ void DroneRandomPose::randomPose(void)
 			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	_client.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::seconds(_wait_time_sec));
+	std::this_thread::sleep_for(std::chrono::milliseconds(_wait_time_millisec));
 }
 
 void DroneRandomPose::updateState(void)
@@ -300,8 +300,8 @@ bool DroneRandomPose::saveImages(std::vector<std::string>& list_save_colorimage_
 			return false;
 		}
 		/*check-timestamp*/
-		if((list_response[i].time_stamp - _imu.time_stamp)*1e-9 > _wait_time_sec){
-			std::cout << "(list_response[i].time_stamp - _imu.time_stamp)*1e-9 = " << (list_response[i].time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_sec << std::endl;
+		if((list_response[i].time_stamp - _imu.time_stamp)*1e-9 > _wait_time_millisec*1e-3){
+			std::cout << "(list_response[i].time_stamp - _imu.time_stamp)*1e-9 = " << (list_response[i].time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_millisec*1e-3 << std::endl;
 			return false;
 		}
 		/*std::vector -> cv::mat*/
@@ -339,8 +339,8 @@ bool DroneRandomPose::saveLidarData(std::string& save_depthimg_name, std::string
 		return false;
 	}
 	/*check-timestamp*/
-	if((lidar_data.time_stamp - _imu.time_stamp)*1e-9 > _wait_time_sec){
-		std::cout << "(lidar_data.time_stamp - _imu.time_stamp)*1e-9 = " << (lidar_data.time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_sec << std::endl;
+	if((lidar_data.time_stamp - _imu.time_stamp)*1e-9 > _wait_time_millisec*1e-3){
+		std::cout << "(lidar_data.time_stamp - _imu.time_stamp)*1e-9 = " << (lidar_data.time_stamp - _imu.time_stamp)*1e-9 << " > " << _wait_time_millisec*1e-3 << std::endl;
 		return false;
 	}
 	/*input*/
