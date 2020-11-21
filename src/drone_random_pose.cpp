@@ -266,6 +266,7 @@ bool DroneRandomPose::saveData(void)
 		std::cout << "Saved: " << save_depthimg_path << std::endl;
 	}
 	/*imu (NEU) with other*/
+	// std::cout << _imu.time_stamp << std::endl;
 	_csvfile 
 		<< _imu.linear_acceleration.x() << "," 
 		<< -_imu.linear_acceleration.y() << "," 
