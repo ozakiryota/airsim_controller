@@ -37,7 +37,7 @@ RUN apt-get update && \
 	cd ~/ && \
 	git clone https://github.com/ozakiryota/airsim_controller.git && \
 	mkdir airsim_controller/build && \
-	cd airsim_controller/build
+	cd airsim_controller/build && \
 	cmake .. && \
 	make -j $(nproc --all)
 ########## Initial position ##########
