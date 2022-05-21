@@ -33,7 +33,8 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get install -y \
 		libopencv-dev \
-		libpcl-dev && \
+		libpcl-dev \
+		nlohmann-json3-dev && \
 	cd ~/ && \
 	git clone https://github.com/ozakiryota/airsim_controller.git && \
 	mkdir airsim_controller/build && \
@@ -41,4 +42,4 @@ RUN apt-get update && \
 	cmake .. && \
 	make -j $(nproc --all)
 ########## Initial position ##########
-WORKDIR /root
+WORKDIR /root/airsim_controller/build

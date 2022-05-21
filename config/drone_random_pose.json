@@ -1,0 +1,17 @@
+{
+  "save_data": true,
+  "num_sampling": 10,
+  "save_dir": "../save/tmp",
+  "lidar_is_available": false,
+  "randomize_whether": false,
+  "wait_time_msec": 200,
+  "x_range": 5.0,
+  "y_range": 5.0,
+  "z_min": -3.0,
+  "z_max": -2.0,
+  "rp_range_deg": 90.0,
+  "num_rings": 32,
+  "points_per_ring": 1812,
+  "fov_upper_deg": 15,
+  "fov_lower_deg": -25
+}

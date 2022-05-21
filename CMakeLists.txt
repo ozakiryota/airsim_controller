@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(airsim_controller)
 
-add_compile_options(-std=c++14 -O2 -g -Wall)
+add_compile_options(-std=c++17 -O2 -g -Wall)
 
 find_package(OpenCV)
 find_package(PCL)
