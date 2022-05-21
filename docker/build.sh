@@ -1,7 +1,8 @@
 #!/bin/bash
 
-image_name="airsim_controller"
+image="airsim_controller"
+tag="latest"
 
 docker build . \
-	-t $image_name:docker \
-	--build-arg CACHEBUST=$(date +%s)
+    -t $image:$tag \
+    --build-arg CACHEBUST=$(date +%s)

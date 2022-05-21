@@ -58,14 +58,14 @@ void DroneWayPointFlight::startFlight(void)
 {
 	std::cout << "startFlight" << std::endl;
 	const double vel = 5.0;
-	YawMode yaw_mode;
+	msr::airlib::YawMode yaw_mode;
 	yaw_mode.is_rate = false;
 	yaw_mode.yaw_or_rate = 0;
 	_client.moveOnPathAsync(
 		_path,
 		vel,
-		Utils::max<float>(),
-		DrivetrainType::ForwardOnly,
+		msr::airlib::Utils::max<float>(),
+		msr::airlib::DrivetrainType::ForwardOnly,
 		yaw_mode
 	)->waitOnLastTask();
 }

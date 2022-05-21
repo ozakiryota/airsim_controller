@@ -166,9 +166,9 @@ void DroneWayPointFlight::startFlight(void)
 	_client.moveOnPathAsync(
 		_path,
 		_velocity,
-		Utils::max<float>(),
-		DrivetrainType::ForwardOnly,
-		YawMode(false, 0.0)
+		msr::airlib::Utils::max<float>(),
+		msr::airlib::DrivetrainType::ForwardOnly,
+		msr::airlib::YawMode(false, 0.0)
 		//-1,
 		//0
 	)->waitOnLastTask();
