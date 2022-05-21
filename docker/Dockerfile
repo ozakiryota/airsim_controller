@@ -10,7 +10,7 @@ RUN apt-get update && \
 		unzip \
 		git \
         python-tk \
-		build-essential
+		cmake
 ########## AirSim ##########
 RUN cd ~/ && \
 	git clone https://github.com/Microsoft/AirSim.git && \
