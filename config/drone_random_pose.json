@@ -4,7 +4,7 @@
   "save_dir": "../save/tmp",
   "lidar_is_available": false,
   "randomize_whether": false,
-  "wait_time_msec": 200,
+  "wait_time_msec": 100,
   "x_range": 5.0,
   "y_range": 5.0,
   "z_min": -3.0,

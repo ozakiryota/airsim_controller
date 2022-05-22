@@ -82,6 +82,8 @@ DroneRandomPose::DroneRandomPose()
 	if(lidar_is_available_)	save_csv_path_.insert(save_csv_path_.size() - std::string(".csv").size(), "_lidar");
 	if(list_camera_.size() > 0)	save_csv_path_.insert(save_csv_path_.size() - std::string(".csv").size(), "_camera");
 	if(save_data_){
+		std::filesystem::remove_all(save_dir_);
+		std::filesystem::create_directory(save_dir_);
 		leaveParamNote();
 		csvInitialization();
 	}
@@ -193,9 +195,6 @@ void DroneRandomPose::csvInitialization(void)
 	//	std::cout << save_csv_path_ << " already exists" << std::endl;
 	//	exit(1);
 	// }
-	/*mkdir*/
-	std::filesystem::remove_all(save_dir_);
-	std::filesystem::create_directory(save_dir_);
 	/*open*/
 	ofs_csv_.open(save_csv_path_, std::ios::app);
 	if(!ofs_csv_){
@@ -209,7 +208,7 @@ void DroneRandomPose::startSampling(void)
 	std::cout << "Start sampling" << std::endl;
 
 	for(int i=0; i<num_sampling_;){
-		std::cout << "--- sample " << i << " / " << num_sampling_ << " ---" << std::endl;
+		std::cout << "--- sample " << i + 1 << " / " << num_sampling_ << " ---" << std::endl;
 		if(randomize_whether_)	randomWeather();
 		randomPose();
 		client_.simPause(true);
@@ -258,7 +257,7 @@ void DroneRandomPose::randomPose(void)
 	eularToQuat(roll, pitch, yaw, orientation);
 	msr::airlib::Pose goal = msr::airlib::Pose(position, orientation);
 	std::cout << "Move to: " << std::endl
-		<< " XYZ[m]: " 
+		<< " XYZ[m]: "
 			<< goal.position.x() << ", "
 			<< goal.position.y() << ", "
 			<< goal.position.z() << std::endl
@@ -273,7 +272,8 @@ void DroneRandomPose::randomPose(void)
 			<< goal.orientation.z() << std::endl;
 	/*teleport*/
 	client_.simSetVehiclePose(goal, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds(wait_time_msec_));
+	// std::this_thread::sleep_for(std::chrono::milliseconds(wait_time_msec_));
+	client_.simContinueForTime(wait_time_msec_ * 1e-3);
 }
 
 void DroneRandomPose::updateState(void)
