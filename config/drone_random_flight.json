@@ -1,0 +1,10 @@
+{
+  "num_sampling": 10,
+  "min_x": -10.0,
+  "max_x": 10.0,
+  "min_y": 10.0,
+  "max_y": -10.0,
+  "min_z": -3.0,
+  "max_z": -2.0,
+  "velocity": 15.0
+}
