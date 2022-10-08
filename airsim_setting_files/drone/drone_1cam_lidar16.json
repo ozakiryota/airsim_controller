@@ -36,7 +36,7 @@
         }
       },
       "Cameras": {
-        "camera_0": {
+        "Camera": {
           "CaptureSettings": [
             {
               "PublishToRos": 1,
@@ -55,6 +55,6 @@
     }
   },
   "SubWindows": [
-    {"WindowID": 1, "ImageType": 0, "CameraName": "camera_0", "Visible": true}
+    {"WindowID": 1, "ImageType": 0, "CameraName": "Camera", "Visible": true}
   ]
 }
