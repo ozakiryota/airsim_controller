@@ -17,17 +17,30 @@
         "AllowAPIWhenDisconnected": false
       },
       "Sensors": {
-        "Imu" : {
+        "imu" : {
           "SensorType": 2,
           "Enabled": true
         }
       },
       "Cameras": {
-        "camera_0": {
+        "camera_0_0": {
           "CaptureSettings": [
             {
               "PublishToRos": 1,
               "ImageType": 0,
+              "Width": 640,
+              "Height": 480,
+              "FOV_Degrees": 70
+            }
+          ],
+          "X": 0, "Y": 0, "Z": -0.4,
+          "Pitch": 0, "Roll": 0, "Yaw": 0
+        },
+        "camera_0_5": {
+          "CaptureSettings": [
+            {
+              "PublishToRos": 1,
+              "ImageType": 5,
               "Width": 640,
               "Height": 480,
               "FOV_Degrees": 70
@@ -42,6 +55,7 @@
     }
   },
   "SubWindows": [
-    {"WindowID": 1, "ImageType": 0, "CameraName": "camera_0", "Visible": true}
+    {"WindowID": 1, "ImageType": 0, "CameraName": "camera_0_0", "Visible": true},
+    {"WindowID": 2, "ImageType": 5, "CameraName": "camera_0_5", "Visible": true}
   ]
 }
