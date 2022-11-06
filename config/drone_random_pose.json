@@ -2,16 +2,18 @@
   "save_data": true,
   "num_sampling": 100,
   "save_dir": "../save/tmp",
-  "lidar_is_available": false,
-  "randomize_whether": false,
-  "wait_time_msec": 10,
+  "randomize_whether": true,
+  "wait_time_msec": 30,
   "x_range": 100.0,
   "y_range": 5.0,
   "z_min": -3.0,
   "z_max": -2.0,
   "rp_range_deg": 5.0,
+  "lidar_is_available": false,
   "num_rings": 32,
   "points_per_ring": 1812,
   "fov_upper_deg": 15,
-  "fov_lower_deg": -25
+  "fov_lower_deg": -25,
+  "scene_camera_0": "camera_0_0",
+  "sgmnt_camera_0": "camera_0_5"
 }
