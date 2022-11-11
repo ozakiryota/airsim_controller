@@ -22,6 +22,7 @@ class DroneRandomPose{
 		std::ofstream ofs_csv_;
 		/*parameter-save*/
 		bool save_data_ = true;
+		bool overwrite_ = true;
 		int num_sampling_ = 100;
 		std::string save_dir_ = "../save/tmp";
 		std::string save_csv_path_ = save_dir_ + "/file_list.csv";
@@ -29,8 +30,10 @@ class DroneRandomPose{
 		bool randomize_whether_ = true;
 		int wait_time_msec_ = 200;
 		/*parameter-pose*/
-		float x_range_ = 200.0;	//Neighborhood: 200, SoccerField: 350
-		float y_range_ = 200.0;	//Neighborhood: 200, SoccerField: 300
+		float min_x_ = -200.0;	//Neighborhood: -200, SoccerField: -350
+		float max_x_ = 200.0;	//Neighborhood: 200, SoccerField: 350
+		float min_y_ = -200.0;	//Neighborhood: -200, SoccerField: -300
+		float max_y_ = 200.0;	//Neighborhood: 200, SoccerField: 300
 		float min_z_ = -3.0;
 		float max_z_ = -2.0;
 		float rp_range_deg_ = 30.0;
@@ -68,7 +71,7 @@ DroneRandomPose::DroneRandomPose()
 	initializeClient();
 	/*file*/
 	if(save_data_){
-		std::filesystem::remove_all(save_dir_);
+		if(overwrite_)	std::filesystem::remove_all(save_dir_);
 		std::filesystem::create_directory(save_dir_);
 		leaveParamNote();
 		initializeCsv();
@@ -89,19 +92,25 @@ bool DroneRandomPose::getParameters()
 	/*get*/
 	if(param_json.contains("save_data"))	save_data_ = param_json["save_data"];
 	std::cout << "save_data_ = " << (bool)save_data_ << std::endl;
+	if(param_json.contains("overwrite"))	overwrite_ = param_json["overwrite"];
+	std::cout << "overwrite_ = " << (bool)overwrite_ << std::endl;
 	if(param_json.contains("num_sampling"))	num_sampling_ = param_json["num_sampling"];
 	std::cout << "num_sampling_ = " << num_sampling_ << std::endl;
 	if(param_json.contains("randomize_whether"))	randomize_whether_ = param_json["randomize_whether"];
 	std::cout << "randomize_whether_ = " << randomize_whether_ << std::endl;
 	if(param_json.contains("wait_time_msec"))	wait_time_msec_ = param_json["wait_time_msec"];
 	std::cout << "wait_time_msec_ = " << wait_time_msec_ << std::endl;
-	if(param_json.contains("x_range"))	x_range_ = param_json["x_range"];
-	std::cout << "x_range_ = " << x_range_ << std::endl;
-	if(param_json.contains("y_range"))	y_range_ = param_json["y_range"];
-	std::cout << "y_range_ = " << y_range_ << std::endl;
-	if(param_json.contains("z_min"))	min_z_ = param_json["z_min"];
+	if(param_json.contains("min_x"))	min_x_ = param_json["min_x"];
+	std::cout << "min_x_ = " << min_x_ << std::endl;
+	if(param_json.contains("max_x"))	max_x_ = param_json["max_x"];
+	std::cout << "max_x_ = " << max_x_ << std::endl;
+	if(param_json.contains("min_y"))	min_y_ = param_json["min_y"];
+	std::cout << "min_y_ = " << min_y_ << std::endl;
+	if(param_json.contains("max_y"))	max_y_ = param_json["max_y"];
+	std::cout << "max_y_ = " << max_y_ << std::endl;
+	if(param_json.contains("min_z"))	min_z_ = param_json["min_z"];
 	std::cout << "min_z_ = " << min_z_ << std::endl;
-	if(param_json.contains("z_max"))	max_z_ = param_json["z_max"];
+	if(param_json.contains("max_z"))	max_z_ = param_json["max_z"];
 	std::cout << "max_z_ = " << max_z_ << std::endl;
 	if(param_json.contains("rp_range_deg"))	rp_range_deg_ = param_json["rp_range_deg"];
 	std::cout << "rp_range_deg_ = " << rp_range_deg_ << std::endl;
@@ -178,8 +187,10 @@ void DroneRandomPose::leaveParamNote()
 	txtfile << "----------" << std::endl
 		<< "randomize_whether_" << ": " << (bool)randomize_whether_ << std::endl
 		<< "num_sampling_" << ": " << num_sampling_ << std::endl
-		<< "x_range_" << ": " << x_range_ << std::endl
-		<< "y_range_" << ": " << y_range_ << std::endl
+		<< "min_x_" << ": " << min_x_ << std::endl
+		<< "max_x_" << ": " << max_x_ << std::endl
+		<< "min_y_" << ": " << min_y_ << std::endl
+		<< "max_y_" << ": " << max_y_ << std::endl
 		<< "min_z_" << ": " << min_z_ << std::endl
 		<< "max_z_" << ": " << max_z_ << std::endl
 		<< "rp_range_deg_" << ": " << rp_range_deg_ << std::endl;
@@ -189,13 +200,6 @@ void DroneRandomPose::leaveParamNote()
 
 void DroneRandomPose::initializeCsv()
 {
-	/*check*/
-	// std::ifstream ifs(save_csv_path_);
-	// if(ifs.is_open()){
-	//	std::cout << save_csv_path_ << " already exists" << std::endl;
-	//	exit(true);
-	// }
-	/*open*/
 	ofs_csv_.open(save_csv_path_, std::ios::app);
 	if(!ofs_csv_){
 		std::cout << "Cannot open " << save_csv_path_ << std::endl;
@@ -242,8 +246,8 @@ void DroneRandomPose::randomizePose()
 	/*random*/
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<> urd_x(-x_range_, x_range_);
-	std::uniform_real_distribution<> urd_y(-y_range_, y_range_);
+	std::uniform_real_distribution<> urd_x(min_x_, max_x_);
+	std::uniform_real_distribution<> urd_y(min_y_, max_y_);
 	std::uniform_real_distribution<> urd_z(min_z_, max_z_);
 	std::uniform_real_distribution<> urd_roll_pitch(-degToRad(rp_range_deg_), degToRad(rp_range_deg_));
 	std::uniform_real_distribution<> urd_yaw(-M_PI, M_PI);
