@@ -37,6 +37,8 @@ class DroneRandomPose{
 		float min_z_ = -3.0;
 		float max_z_ = -2.0;
 		float rp_range_deg_ = 30.0;
+		float min_yaw_deg_ = -180.0;
+		float max_yaw_deg_ = 180.0;
 		/*parameter-lidar*/
 		bool lidar_is_available_ = false;
 		int num_rings_ = 32;
@@ -114,6 +116,10 @@ bool DroneRandomPose::getParameters()
 	std::cout << "max_z_ = " << max_z_ << std::endl;
 	if(param_json.contains("rp_range_deg"))	rp_range_deg_ = param_json["rp_range_deg"];
 	std::cout << "rp_range_deg_ = " << rp_range_deg_ << std::endl;
+	if(param_json.contains("min_yaw_deg"))	min_yaw_deg_ = param_json["min_yaw_deg"];
+	std::cout << "min_yaw_deg_ = " << min_yaw_deg_ << std::endl;
+	if(param_json.contains("max_yaw_deg"))	max_yaw_deg_ = param_json["max_yaw_deg"];
+	std::cout << "max_yaw_deg_ = " << max_yaw_deg_ << std::endl;
 	if(param_json.contains("lidar_is_available"))	lidar_is_available_ = param_json["lidar_is_available"];
 	std::cout << "lidar_is_available_ = " << lidar_is_available_ << std::endl;
 	if(lidar_is_available_){
@@ -193,7 +199,9 @@ void DroneRandomPose::leaveParamNote()
 		<< "max_y_" << ": " << max_y_ << std::endl
 		<< "min_z_" << ": " << min_z_ << std::endl
 		<< "max_z_" << ": " << max_z_ << std::endl
-		<< "rp_range_deg_" << ": " << rp_range_deg_ << std::endl;
+		<< "rp_range_deg_" << ": " << rp_range_deg_ << std::endl
+		<< "min_yaw_deg_" << ": " << min_yaw_deg_ << std::endl
+		<< "max_yaw_deg_" << ": " << max_yaw_deg_ << std::endl;
 	/*close*/
 	txtfile.close();
 }
@@ -250,7 +258,7 @@ void DroneRandomPose::randomizePose()
 	std::uniform_real_distribution<> urd_y(min_y_, max_y_);
 	std::uniform_real_distribution<> urd_z(min_z_, max_z_);
 	std::uniform_real_distribution<> urd_roll_pitch(-degToRad(rp_range_deg_), degToRad(rp_range_deg_));
-	std::uniform_real_distribution<> urd_yaw(-M_PI, M_PI);
+	std::uniform_real_distribution<> urd_yaw(degToRad(min_yaw_deg_), degToRad(max_yaw_deg_));
 	/*set pose*/
 	Eigen::Vector3f position(urd_x(mt), urd_y(mt), urd_z(mt));
 	float roll = urd_roll_pitch(mt);
