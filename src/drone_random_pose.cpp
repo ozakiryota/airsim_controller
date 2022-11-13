@@ -340,20 +340,20 @@ bool DroneRandomPose::saveData()
 	std::ofstream imu_json(save_imu_path);
 	imu_json << imu_data;
     imu_json.close();
-	ofs_csv_ << imu_filename << ",";
+	ofs_csv_ << imu_filename;
 	std::cout << "Saved: " << save_imu_path << std::endl;
 	/*save-camera*/
 	for(size_t i = 0; i < camera_filename_list.size(); i++){
 		std::string save_camera_path = save_dir_ + "/" + camera_filename_list[i];
 		cv::imwrite(save_camera_path, camera_data_list[i]);
-		ofs_csv_ << camera_filename_list[i]  << ",";
+		ofs_csv_ << "," << camera_filename_list[i];
 		std::cout << "Saved: " << save_camera_path << std::endl;
 	}
 	/*save-lidar*/
 	if(lidar_is_available_){
 		std::string save_lidar_path = save_dir_ + "/" + lidar_filename;
 		cnpy::npy_save(save_lidar_path, &lidar_data[0], {(long unsigned int)num_rings_, (long unsigned int)points_per_ring_}, "w");
-		ofs_csv_ << lidar_filename;
+		ofs_csv_ << "," << lidar_filename;
 		std::cout << "Saved: " << save_lidar_path << std::endl;
 	}
 	ofs_csv_ << std::endl;
