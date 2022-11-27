@@ -257,13 +257,13 @@ void DroneRandomPose::randomizePose()
 	std::uniform_real_distribution<> urd_x(min_x_, max_x_);
 	std::uniform_real_distribution<> urd_y(min_y_, max_y_);
 	std::uniform_real_distribution<> urd_z(min_z_, max_z_);
-	std::uniform_real_distribution<> urd_roll_pitch(-degToRad(rp_range_deg_), degToRad(rp_range_deg_));
-	std::uniform_real_distribution<> urd_yaw(degToRad(min_yaw_deg_), degToRad(max_yaw_deg_));
+	std::uniform_real_distribution<> urd_roll_pitch(-rp_range_deg_, rp_range_deg_);
+	std::uniform_real_distribution<> urd_yaw(min_yaw_deg_, max_yaw_deg_);
 	/*set pose*/
 	Eigen::Vector3f position(urd_x(mt), urd_y(mt), urd_z(mt));
-	float roll = urd_roll_pitch(mt);
-	float pitch = urd_roll_pitch(mt);
-	float yaw = urd_yaw(mt);
+	float roll = degToRad(urd_roll_pitch(mt));
+	float pitch = degToRad(urd_roll_pitch(mt));
+	float yaw = degToRad(urd_yaw(mt));
 	Eigen::Quaternionf orientation;
 	eularToQuat(roll, pitch, yaw, orientation);
 	msr::airlib::Pose goal = msr::airlib::Pose(position, orientation);
