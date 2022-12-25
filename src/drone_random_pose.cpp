@@ -55,7 +55,7 @@ class DroneRandomPose{
 		void eularToQuat(float r, float p, float y, Eigen::Quaternionf& q);
 		void updatePose();
 		bool saveData();
-		bool getCameraData(std::vector<std::string>& save_filename_list, std::vector<cv::Mat>& save_data_list);
+		bool getCameraData(std::vector<std::string>& save_filename_list, std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& response_list);
 		bool getLidarData(std::string& save_filename, std::vector<float>& save_data);
 		float degToRad(float deg);
 
@@ -136,7 +136,7 @@ bool DroneRandomPose::getParameters()
 		std::string param_name = "scene_camera_" + std::to_string(i);
 		if(param_json.contains(param_name)){
 			std::string tmp_camera_name = param_json[param_name];
-			camera_request_list_.push_back(msr::airlib::ImageCaptureBase::ImageRequest(tmp_camera_name, msr::airlib::ImageCaptureBase::ImageType::Scene, false, false));
+			camera_request_list_.push_back(msr::airlib::ImageCaptureBase::ImageRequest(tmp_camera_name, msr::airlib::ImageCaptureBase::ImageType::Scene));
 		}
 		else	break;
 	}
@@ -144,7 +144,7 @@ bool DroneRandomPose::getParameters()
 		std::string param_name = "sgmnt_camera_" + std::to_string(i);
 		if(param_json.contains(param_name)){
 			std::string tmp_camera_name = param_json[param_name];
-			camera_request_list_.push_back(msr::airlib::ImageCaptureBase::ImageRequest(tmp_camera_name, msr::airlib::ImageCaptureBase::ImageType::Segmentation, false, false));
+			camera_request_list_.push_back(msr::airlib::ImageCaptureBase::ImageRequest(tmp_camera_name, msr::airlib::ImageCaptureBase::ImageType::Segmentation));
 		}
 		else	break;
 	}
@@ -317,9 +317,9 @@ bool DroneRandomPose::saveData()
 	std::string imu_filename = std::to_string(imu_.time_stamp) + "_imu.json";
 	/*get-camera*/
 	std::vector<std::string> camera_filename_list;
-	std::vector<cv::Mat> camera_data_list;
+	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> response_list;
 	if(!camera_request_list_.empty()){
-		if(!getCameraData(camera_filename_list, camera_data_list))	return false;
+		if(!getCameraData(camera_filename_list, response_list))	return false;
 	}
 	/*get lidar*/
 	std::string lidar_filename;
@@ -345,7 +345,9 @@ bool DroneRandomPose::saveData()
 	/*save-camera*/
 	for(size_t i = 0; i < camera_filename_list.size(); i++){
 		std::string save_camera_path = save_dir_ + "/" + camera_filename_list[i];
-		cv::imwrite(save_camera_path, camera_data_list[i]);
+		std::ofstream camera_file(save_camera_path, std::ios::binary);
+		camera_file.write(reinterpret_cast<const char*>(response_list[i].image_data_uint8.data()), response_list[i].image_data_uint8.size());
+		camera_file.close();
 		ofs_csv_ << "," << camera_filename_list[i];
 		std::cout << "Saved: " << save_camera_path << std::endl;
 	}
@@ -361,14 +363,14 @@ bool DroneRandomPose::saveData()
 	return true;
 }
 
-bool DroneRandomPose::getCameraData(std::vector<std::string>& save_filename_list, std::vector<cv::Mat>& save_data_list)
+bool DroneRandomPose::getCameraData(std::vector<std::string>& save_filename_list, std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& response_list)
 {
 	/*get*/
-	std::vector<msr::airlib::ImageCaptureBase::ImageResponse> response_list = client_.simGetImages(camera_request_list_);
+	response_list = client_.simGetImages(camera_request_list_);
 	/*convert*/
 	for(const msr::airlib::ImageCaptureBase::ImageResponse& response : response_list){
 		/*check-file*/
-		std::string save_filename = std::to_string(response.time_stamp) + "_" +  response.camera_name + ".jpg";
+		std::string save_filename = std::to_string(response.time_stamp) + "_" +  response.camera_name + ".png";
 		std::string save_path = save_dir_ + "/" + save_filename;
 		std::ifstream ifs(save_path);
 		if(ifs.is_open()){
@@ -381,18 +383,8 @@ bool DroneRandomPose::getCameraData(std::vector<std::string>& save_filename_list
 			std::cout << "time_diff_sec = " << time_diff_sec << " > " << wait_time_msec_ * 1e-3 << std::endl;
 			return false;
 		}
-		/*std::vector -> cv::mat*/
-		cv::Mat img_cv = cv::Mat(response.height, response.width, CV_8UC3);
-		for(int row = 0; row < response.height; ++row){
-			for(int col = 0; col < response.width; ++col){
-				img_cv.at<cv::Vec3b>(row, col)[0] = response.image_data_uint8[3 * row * response.width + 3 * col + 0];
-				img_cv.at<cv::Vec3b>(row, col)[1] = response.image_data_uint8[3 * row * response.width + 3 * col + 1];
-				img_cv.at<cv::Vec3b>(row, col)[2] = response.image_data_uint8[3 * row * response.width + 3 * col + 2];
-			}
-		}
 		/*append*/
 		save_filename_list.push_back(save_filename);
-		save_data_list.push_back(img_cv);
 	}
 	return true;
 }
